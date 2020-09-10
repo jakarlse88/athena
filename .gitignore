@@ -645,3 +645,4 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,jetbrains,dotnetcore,aspnetcore,visualstudio,visualstudiocode
+.vscode/
