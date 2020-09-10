@@ -10,6 +10,7 @@ namespace Athena.Infrastructure.Config
         /// Configures OIDC authentication with Auth0.
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
         internal static IServiceCollection ConfigureAuthentication(this IServiceCollection services,
             IConfiguration configuration)
@@ -20,7 +21,7 @@ namespace Athena.Infrastructure.Config
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                var authConfig = configuration.GetSection("Auth0").Get<Auth0Options>();
+                var authConfig = configuration.GetSection(Auth0Options.Auth0).Get<Auth0Options>();
 
                 options.Authority = authConfig.Authority;
                 options.Audience = authConfig.ApiIdentifier;
