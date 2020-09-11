@@ -23,6 +23,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 CMD dockerize \
-    -wait http://hermes-service:15672 -wait-retry-interval 30s -timeout 600s \
     -wait tcp://athena-db-service:1433 -wait-retry-interval 30s -timeout 600s \
     dotnet Athena.dll
