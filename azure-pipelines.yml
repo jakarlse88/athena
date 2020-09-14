@@ -42,7 +42,8 @@ stages:
         command: build
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
-          $(tag)
+          latest
+          
   - job: Push
     displayName: Push image
     steps:
@@ -52,4 +53,4 @@ stages:
         repository: 'jakarlse88/athena'
         command: 'push'
         tags: |
-          $(tag)
+          latest
