@@ -51,3 +51,5 @@ stages:
         containerRegistry: 'Docker Hub'
         repository: 'jakarlse88/athena'
         command: 'push'
+        tags: |
+          $(tag)
