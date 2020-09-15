@@ -33,8 +33,13 @@ namespace Athena
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.ApplyMigrations();
+            }
 
-            app.UseHttpsRedirection()
+            app
+                .UseHttpsRedirection()
                 .UseSwaggerUI()
                 .UseRouting()
                 .UseAuthorization()

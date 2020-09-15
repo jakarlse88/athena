@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
+using Serilog;
 
 namespace Athena.Infrastructure.Config
 {
@@ -34,7 +35,7 @@ namespace Athena.Infrastructure.Config
         /// <returns></returns>
         internal static IApplicationBuilder ApplyMigrations(this IApplicationBuilder app)
         {
-            Console.WriteLine("Applying migrations. This may take a moment.");
+            Log.Information("Applying migrations, please wait.");
 
             using (var serviceScope = app.ApplicationServices.CreateScope())
             using (var context = serviceScope.ServiceProvider.GetRequiredService<AthenaDbContext>())
@@ -55,12 +56,12 @@ namespace Athena.Infrastructure.Config
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("A fatal error occurred while trying to apply migrations: {ex}", ex);
+                    Log.Fatal("A fatal error occurred while trying to apply migrations: {@ex}", ex);
                     throw;
                 }
             }
 
-            Console.WriteLine("Migrations operation successful. Continuing application Startup.");
+            Log.Information("Migrations operation successful, continuing application startup.");
             return app;
         }
     }
