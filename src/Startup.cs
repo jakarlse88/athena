@@ -20,7 +20,11 @@ namespace Athena
         {
             services.AddControllers();
 
-            services.ConfigureAuthentication(Configuration);
+            services
+                .ConfigureAuthentication(Configuration)
+                .ConfigureDbContext(Configuration)
+                .ConfigureCors()
+                .ConfigureSwagger();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -31,6 +35,7 @@ namespace Athena
             }
 
             app.UseHttpsRedirection()
+                .UseSwaggerUI()
                 .UseRouting()
                 .UseAuthorization()
                 .UseAuthentication()
