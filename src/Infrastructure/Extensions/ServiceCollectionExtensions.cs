@@ -2,16 +2,30 @@
 using System.IO;
 using System.Reflection;
 using Athena.Data;
+using Athena.Infrastructure.Config;
+using Athena.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace Athena.Infrastructure.Config
+namespace Athena.Infrastructure
 {
     internal static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds repository layer services to the application dependency injection container. 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        internal static IServiceCollection ConfigureRepositoryLayer(this IServiceCollection services)
+        {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            return services;
+        }
+        
         /// <summary>
         /// Configures OIDC authentication with Auth0.
         /// </summary>

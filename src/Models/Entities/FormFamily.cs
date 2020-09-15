@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Athena.Models
 {
-    public partial class FormFamily
+    public partial class FormFamily : IEntityBase
     {
         public FormFamily()
         {

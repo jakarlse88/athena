@@ -1,3 +1,4 @@
+using Athena.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,7 @@ namespace Athena
             services
                 .ConfigureAuthentication(Configuration)
                 .ConfigureDbContext(Configuration)
+                .ConfigureRepositoryLayer()
                 .ConfigureCors()
                 .ConfigureSwagger();
         }
@@ -35,6 +37,7 @@ namespace Athena
             }
             else
             {
+                // I'm assuming I'll be doing something more sophisticated in production.
                 app.ApplyMigrations();
             }
 
@@ -42,6 +45,7 @@ namespace Athena
                 .UseHttpsRedirection()
                 .UseSwaggerUI()
                 .UseRouting()
+                .UseCors()
                 .UseAuthorization()
                 .UseAuthentication()
                 .UseEndpoints(endpoints => { endpoints.MapControllers(); });

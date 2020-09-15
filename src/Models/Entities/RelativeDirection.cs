@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Athena.Models
 {
-    public partial class RotationCategory
+    public partial class RelativeDirection : IEntityBase
     {
-        public RotationCategory()
+        public RelativeDirection()
         {
             Transition = new HashSet<Transition>();
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Athena.Models
 {
-    public partial class TransitionCategory
+    public partial class TransitionCategory : IEntityBase
     {
         public TransitionCategory()
         {

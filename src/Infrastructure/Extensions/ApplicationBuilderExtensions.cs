@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Serilog;
 
-namespace Athena.Infrastructure.Config
+namespace Athena.Infrastructure
 {
     internal static class ApplicationBuilderExtensions
     {

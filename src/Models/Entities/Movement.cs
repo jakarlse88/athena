@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Athena.Models
 {
-    public partial class Movement
+    public partial class Movement : IEntityBase
     {
         public Movement()
         {

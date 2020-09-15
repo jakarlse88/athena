@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Athena.Models
 {
-    public partial class NameCategory
+    public partial class NameCategory : IEntityBase
     {
         public NameCategory()
         {

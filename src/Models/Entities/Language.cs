@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Athena.Models
 {
-    public partial class Language
+    public partial class Language : IEntityBase
     {
         public Language()
         {

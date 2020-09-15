@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Athena.Models
 {
-    public partial class StanceType
+    public partial class StanceType : IEntityBase
     {
         public StanceType()
         {
