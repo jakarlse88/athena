@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Athena.Data;
-using Athena.Models;
+using Athena.Models.NewEntities;
 using Athena.Repositories;
 using Moq;
 using Xunit;

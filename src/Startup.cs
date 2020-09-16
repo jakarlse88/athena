@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Athena.Infrastructure.Config;
+using AutoMapper;
 
 namespace Athena
 {
@@ -26,7 +26,8 @@ namespace Athena
                 .ConfigureDbContext(Configuration)
                 .ConfigureRepositoryLayer()
                 .ConfigureCors()
-                .ConfigureSwagger();
+                .ConfigureSwagger()
+                .AddAutoMapper(typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

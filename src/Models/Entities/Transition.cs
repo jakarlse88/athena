@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Athena.Models
+namespace Athena.Models.NewEntities
 {
     public partial class Transition : IEntityBase
     {
@@ -15,9 +15,11 @@ namespace Athena.Models
         public int RotationCategoryId { get; set; }
         public int RelationDirectionId { get; set; }
         public int StanceId { get; set; }
+        public int TechniqueId { get; set; }
 
         public virtual RelativeDirection RelationDirection { get; set; }
         public virtual RotationCategory RotationCategory { get; set; }
+        public virtual Technique Technique { get; set; }
         public virtual ICollection<Movement> Movement { get; set; }
         public virtual ICollection<TransitionCategoryTransition> TransitionCategoryTransition { get; set; }
     }

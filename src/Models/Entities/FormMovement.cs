@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Athena.Models
+namespace Athena.Models.NewEntities
 {
     public partial class FormMovement
     {
