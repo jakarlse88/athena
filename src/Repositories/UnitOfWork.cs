@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Athena.Data;
-using Athena.Models;
+using Athena.Models.NewEntities;
 
 namespace Athena.Repositories
 {
@@ -8,6 +8,8 @@ namespace Athena.Repositories
     {
         private readonly AthenaDbContext _context;
         private IRepository<Technique> _techniqueRepository;
+        private IRepository<TechniqueCategory> _techniqueCategoryRepository;
+        private IRepository<TechniqueType> _techniqueTypeRepository;
 
         public UnitOfWork(AthenaDbContext context)
         {
@@ -15,11 +17,23 @@ namespace Athena.Repositories
         }
 
         /// <summary>
-        /// Gets, and if necessary instantiates the TechniqueRepository instance.
+        /// Gets, and if necessary instantiates a TechniqueRepository instance.
         /// </summary>
         public IRepository<Technique> TechniqueRepository =>
             _techniqueRepository ??= new Repository<Technique>(_context);
-        
+
+        /// <summary>
+        /// Gets, and if necessary instantiates a TechniqueCategoryRepository instance.
+        /// </summary>
+        public IRepository<TechniqueCategory> TechniqueCategoryRepository =>
+            _techniqueCategoryRepository ??= new Repository<TechniqueCategory>(_context);
+
+        /// <summary>
+        /// Gets, and if necessary instantiates a TechniqueTypeRepository instance.
+        /// </summary>
+        public IRepository<TechniqueType> TechniqueTypeRepository =>
+            _techniqueTypeRepository ??= new Repository<TechniqueType>(_context);
+
         /// <summary>
         /// Asynchronously persists any currently tracked changes to the DB.
         /// </summary>

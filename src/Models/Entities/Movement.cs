@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Athena.Models
+namespace Athena.Models.NewEntities
 {
     public partial class Movement : IEntityBase
     {
@@ -14,6 +14,7 @@ namespace Athena.Models
         public int StanceId { get; set; }
         public int TechniqueId { get; set; }
         public int TransitionId { get; set; }
+        public byte NumberInSequence { get; set; }
 
         public virtual Stance Stance { get; set; }
         public virtual Technique Technique { get; set; }

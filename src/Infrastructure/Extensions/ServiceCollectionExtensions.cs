@@ -4,6 +4,7 @@ using System.Reflection;
 using Athena.Data;
 using Athena.Infrastructure.Config;
 using Athena.Repositories;
+using Athena.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,18 @@ namespace Athena.Infrastructure
 {
     internal static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds service layer services to the application dependency injection container. 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        internal static IServiceCollection ConfigureServiceLayer(this IServiceCollection services)
+        {
+            services.AddTransient<ITechniqueService, TechniqueService>();
+
+            return services;
+        }
+        
         /// <summary>
         /// Adds repository layer services to the application dependency injection container. 
         /// </summary>

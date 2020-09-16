@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Athena.Models;
+using Athena.Models.NewEntities;
 
 namespace Athena.Data
 {
     public partial class AthenaDbContext : DbContext
     {
-        #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         public AthenaDbContext()
         {
         }
@@ -19,21 +18,15 @@ namespace Athena.Data
 
         public virtual DbSet<Form> Form { get; set; }
         public virtual DbSet<FormFamily> FormFamily { get; set; }
-        public virtual DbSet<FormFamilyName> FormFamilyName { get; set; }
         public virtual DbSet<FormMovement> FormMovement { get; set; }
-        public virtual DbSet<Language> Language { get; set; }
         public virtual DbSet<Movement> Movement { get; set; }
-        public virtual DbSet<Name> Name { get; set; }
-        public virtual DbSet<NameCategory> NameCategory { get; set; }
         public virtual DbSet<RelativeDirection> RelativeDirection { get; set; }
         public virtual DbSet<RotationCategory> RotationCategory { get; set; }
         public virtual DbSet<Stance> Stance { get; set; }
         public virtual DbSet<StanceCategory> StanceCategory { get; set; }
         public virtual DbSet<StanceType> StanceType { get; set; }
-        public virtual DbSet<StanceTypeName> StanceTypeName { get; set; }
         public virtual DbSet<Technique> Technique { get; set; }
         public virtual DbSet<TechniqueCategory> TechniqueCategory { get; set; }
-        public virtual DbSet<TechniqueName> TechniqueName { get; set; }
         public virtual DbSet<TechniqueType> TechniqueType { get; set; }
         public virtual DbSet<Transition> Transition { get; set; }
         public virtual DbSet<TransitionCategory> TransitionCategory { get; set; }
@@ -41,12 +34,23 @@ namespace Athena.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Form>(entity =>
             {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
                 entity.HasOne(d => d.FormFamily)
                     .WithMany(p => p.Form)
                     .HasForeignKey(d => d.FormFamilyId)
@@ -54,21 +58,15 @@ namespace Athena.Data
                     .HasConstraintName("FK_Form_FormFamily");
             });
 
-            modelBuilder.Entity<FormFamilyName>(entity =>
+            modelBuilder.Entity<FormFamily>(entity =>
             {
-                entity.HasKey(e => new { e.FormFamilyId, e.NameId });
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.HasOne(d => d.FormFamily)
-                    .WithMany(p => p.FormFamilyName)
-                    .HasForeignKey(d => d.FormFamilyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_FormFamilyName_FormFamily");
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
 
-                entity.HasOne(d => d.Name)
-                    .WithMany(p => p.FormFamilyName)
-                    .HasForeignKey(d => d.NameId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_FormFamilyName_Name");
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
             });
 
             modelBuilder.Entity<FormMovement>(entity =>
@@ -86,13 +84,6 @@ namespace Athena.Data
                     .HasForeignKey(d => d.MovementId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_FormMovement_Movement");
-            });
-
-            modelBuilder.Entity<Language>(entity =>
-            {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Movement>(entity =>
@@ -116,33 +107,6 @@ namespace Athena.Data
                     .HasConstraintName("FK_Movement_Transition");
             });
 
-            modelBuilder.Entity<Name>(entity =>
-            {
-                entity.Property(e => e.Name1)
-                    .IsRequired()
-                    .HasColumnName("Name")
-                    .HasMaxLength(200);
-
-                entity.HasOne(d => d.Language)
-                    .WithMany(p => p.NameNavigation)
-                    .HasForeignKey(d => d.LanguageId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Name_Language");
-
-                entity.HasOne(d => d.NameCategory)
-                    .WithMany(p => p.Name)
-                    .HasForeignKey(d => d.NameCategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Name_NameCategory");
-            });
-
-            modelBuilder.Entity<NameCategory>(entity =>
-            {
-                entity.Property(e => e.Category)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
             modelBuilder.Entity<RelativeDirection>(entity =>
             {
                 entity.Property(e => e.Name)
@@ -159,6 +123,14 @@ namespace Athena.Data
 
             modelBuilder.Entity<Stance>(entity =>
             {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
                 entity.HasOne(d => d.StanceCategory)
                     .WithMany(p => p.Stance)
                     .HasForeignKey(d => d.StanceCategoryId)
@@ -186,25 +158,16 @@ namespace Athena.Data
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<StanceTypeName>(entity =>
-            {
-                entity.HasKey(e => new { e.StanceTypeId, e.NameId });
-
-                entity.HasOne(d => d.Name)
-                    .WithMany(p => p.StanceTypeName)
-                    .HasForeignKey(d => d.NameId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StanceTypeName_Name");
-
-                entity.HasOne(d => d.StanceType)
-                    .WithMany(p => p.StanceTypeName)
-                    .HasForeignKey(d => d.StanceTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StanceTypeName_StanceType");
-            });
-
             modelBuilder.Entity<Technique>(entity =>
             {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
                 entity.HasOne(d => d.TechniqueCategory)
                     .WithMany(p => p.Technique)
                     .HasForeignKey(d => d.TechniqueCategoryId)
@@ -223,23 +186,6 @@ namespace Athena.Data
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<TechniqueName>(entity =>
-            {
-                entity.HasKey(e => new { e.TechniqueId, e.NameId });
-
-                entity.HasOne(d => d.Name)
-                    .WithMany(p => p.TechniqueName)
-                    .HasForeignKey(d => d.NameId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TechniqueName_Name");
-
-                entity.HasOne(d => d.Technique)
-                    .WithMany(p => p.TechniqueName)
-                    .HasForeignKey(d => d.TechniqueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TechniqueName_Technique");
             });
 
             modelBuilder.Entity<TechniqueType>(entity =>
@@ -262,6 +208,12 @@ namespace Athena.Data
                     .HasForeignKey(d => d.RotationCategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transition_RotationCategory");
+
+                entity.HasOne(d => d.Technique)
+                    .WithMany(p => p.Transition)
+                    .HasForeignKey(d => d.TechniqueId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Transition_Technique");
             });
 
             modelBuilder.Entity<TransitionCategory>(entity =>

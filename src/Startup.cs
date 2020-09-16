@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Athena.Infrastructure.Config;
+using AutoMapper;
+using FluentValidation.AspNetCore;
 
 namespace Athena
 {
@@ -19,14 +20,19 @@ namespace Athena
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services
+                .AddControllers()
+                .AddFluentValidation(fv =>
+                    fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services
                 .ConfigureAuthentication(Configuration)
                 .ConfigureDbContext(Configuration)
                 .ConfigureRepositoryLayer()
+                .ConfigureServiceLayer()
                 .ConfigureCors()
-                .ConfigureSwagger();
+                .ConfigureSwagger()
+                .AddAutoMapper(typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -48,7 +54,17 @@ namespace Athena
                 .UseCors()
                 .UseAuthorization()
                 .UseAuthentication()
-                .UseEndpoints(endpoints => { endpoints.MapControllers(); });
+                .UseEndpoints(endpoints =>
+                {
+                    if (env.IsDevelopment())
+                    {
+                        endpoints.MapControllers();
+                    }
+                    else
+                    {
+                        endpoints.MapControllers().RequireAuthorization();
+                    }
+                });
         }
     }
 }

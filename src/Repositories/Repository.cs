@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Athena.Data;
 using Athena.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Athena.Repositories
 {
@@ -14,7 +19,7 @@ namespace Athena.Repositories
         }
 
         /// <summary>
-        /// Begins tracking an entity of type <typeparam name="TEntity"></typeparam> in the 'Added' state, such that it
+        /// Begins tracking a TEntity entity of type in the 'Added' state, such that it
         /// will be persisted to the DB when SaveChanges() is called.
         /// </summary>
         /// <param name="entity"></param>
@@ -27,6 +32,50 @@ namespace Athena.Repositories
             }
             
             _context.Set<TEntity>().Add(entity);
+        }
+
+        /// <summary>
+        /// Gets the subset of all TEntity entities that satisfy a given condition.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));    
+            }
+
+            var result = 
+                await _context
+                    .Set<TEntity>()
+                    .Where(predicate)
+                    .ToArrayAsync();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets a TEntity entity by its ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public async Task<TEntity> GetByIdAsync(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id));
+            }
+
+            var entity = 
+                await _context
+                    .Set<TEntity>()
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+
+            return entity;
         }
     }
 }
