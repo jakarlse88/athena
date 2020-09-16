@@ -74,11 +74,15 @@ namespace Athena.Infrastructure
         {
             services.AddCors(options => options.AddDefaultPolicy(builder =>
             {
+                // Testing with locally run client
                 builder
-                    .AllowAnyOrigin()
+                    .WithOrigins("https://localhost:5001")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
+                
+                // The real question is, what to do re: CORS when the application/services are deployed with Kubernetes?
+                
             }));
 
             return services;
