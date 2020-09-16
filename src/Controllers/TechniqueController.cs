@@ -1,4 +1,7 @@
-﻿using Athena.Services;
+﻿using System;
+using System.Threading.Tasks;
+using Athena.Services;
+using Athena.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Athena.Controllers
@@ -12,6 +15,12 @@ namespace Athena.Controllers
         public TechniqueController(ITechniqueService techniqueService)
         {
             _techniqueService = techniqueService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(TechniqueViewModel model)
+        {
+            throw new NotImplementedException();
         }
     }
 }
