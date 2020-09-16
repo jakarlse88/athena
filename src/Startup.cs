@@ -54,7 +54,17 @@ namespace Athena
                 .UseCors()
                 .UseAuthorization()
                 .UseAuthentication()
-                .UseEndpoints(endpoints => { endpoints.MapControllers(); });
+                .UseEndpoints(endpoints =>
+                {
+                    if (env.IsDevelopment())
+                    {
+                        endpoints.MapControllers();
+                    }
+                    else
+                    {
+                        endpoints.MapControllers().RequireAuthorization();
+                    }
+                });
         }
     }
 }
