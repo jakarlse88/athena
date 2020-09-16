@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Athena.Models.NewEntities;
 using Athena.Services;
 using Athena.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Athena.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TechniqueController
+    public class TechniqueController : ControllerBase
     {
         private readonly ITechniqueService _techniqueService;
 
@@ -17,10 +20,52 @@ namespace Athena.Controllers
             _techniqueService = techniqueService;
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Gets a <see cref="Technique"/> entity by its ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <response code="200">Entity was found.</response>
+        /// <response code="400">Bad ID.</response>
+        /// <response code="401">User not authorized.</response>
+        /// <response code="404">Entity was not found.</response>
+        [HttpGet, Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Get(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest();
+            }
+            
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Technique"/> entity.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <response code="201">Entity was successfully created.</response>
+        /// <response code="400">Received a null value for <param name="model"></param>.</response>
+        /// <response code="401">User not authorized.</response>
+        [HttpPost, Authorize]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Post(TechniqueViewModel model)
         {
-            throw new NotImplementedException();
+            if (model == null)
+            {
+                return BadRequest();
+            }
+
+            var result = await _techniqueService.CreateAsync(model);
+
+            return CreatedAtAction("Get", new { id = result.Id }, result);
         }
     }
 }
