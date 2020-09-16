@@ -25,6 +25,7 @@ namespace Athena
                 .ConfigureAuthentication(Configuration)
                 .ConfigureDbContext(Configuration)
                 .ConfigureRepositoryLayer()
+                .ConfigureServiceLayer()
                 .ConfigureCors()
                 .ConfigureSwagger()
                 .AddAutoMapper(typeof(Startup));
