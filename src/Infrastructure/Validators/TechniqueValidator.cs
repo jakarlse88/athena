@@ -19,13 +19,19 @@ namespace Athena.Infrastructure.Validators
                 .MaximumLength(50)
                 .Matches(new Regex(@"^[a-zA-Z ]*$"));
 
-            RuleFor(model => model.NameHangeul)
-                .MaximumLength(50)
-                .Matches(new Regex(@"^[\p{IsHangulSyllables} ]*$"));
-            
-            RuleFor(model => model.NameHanja)
-                .MaximumLength(50)
-                .Matches(new Regex(@"^[\p{IsCJKUnifiedIdeographs} ]*$"));
+            When(model => !string.IsNullOrWhiteSpace(model.NameHangeul), () =>
+            {
+                RuleFor(model => model.NameHangeul)
+                    .MaximumLength(50)
+                    .Matches(new Regex(@"^[\p{IsHangulSyllables} ]*$"));
+            });
+
+            When(model => !string.IsNullOrWhiteSpace(model.NameHanja), () =>
+            {
+                RuleFor(model => model.NameHanja)
+                    .MaximumLength(50)
+                    .Matches(new Regex(@"^[\p{IsCJKUnifiedIdeographs} ]*$"));    
+            });
         }
     }
 }

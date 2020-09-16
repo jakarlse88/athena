@@ -47,12 +47,11 @@ namespace Athena.Controllers
         /// <summary>
         /// Creates a new <see cref="Technique"/> entity.
         /// </summary>
-        /// <param name="model"></param>
         /// <returns></returns>
         /// <response code="201">Entity was successfully created.</response>
         /// <response code="400">Received a null value for <param name="model"></param>.</response>
         /// <response code="401">User not authorized.</response>
-        [HttpPost, Authorize]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
