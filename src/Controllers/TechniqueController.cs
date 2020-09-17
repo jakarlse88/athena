@@ -21,9 +21,9 @@ namespace Athena.Controllers
         }
 
         /// <summary>
-        /// Gets a <see cref="Technique"/> entity by its ID.
+        /// Gets a <see cref="Technique"/> entity by its Name property.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
         /// <response code="200">Entity was found.</response>
         /// <response code="400">Bad ID.</response>
@@ -34,9 +34,9 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(string name)
         {
-            if (id <= 0)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return BadRequest();
             }
@@ -64,7 +64,7 @@ namespace Athena.Controllers
 
             var result = await _techniqueService.CreateAsync(model);
 
-            return CreatedAtAction("Get", new { id = result.Id }, result);
+            return CreatedAtAction("Get", new { id = result.Name }, result);
         }
     }
 }

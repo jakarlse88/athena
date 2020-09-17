@@ -34,7 +34,7 @@ namespace Athena.Infrastructure
         /// <returns></returns>
         internal static IServiceCollection ConfigureRepositoryLayer(this IServiceCollection services)
         {
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
             return services;
         }

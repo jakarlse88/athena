@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Athena.Models.NewEntities
 {
-    public partial class Transition : IEntityBase
+    public partial class Transition
     {
         public Transition()
         {
@@ -12,14 +11,14 @@ namespace Athena.Models.NewEntities
         }
 
         public int Id { get; set; }
-        public int RotationCategoryId { get; set; }
-        public int RelationDirectionId { get; set; }
-        public int StanceId { get; set; }
-        public int TechniqueId { get; set; }
+        public string RotationCategoryName { get; set; }
+        public string RelativeDirectionName { get; set; }
+        public string StanceName { get; set; }
+        public string TechniqueName { get; set; }
 
-        public virtual RelativeDirection RelationDirection { get; set; }
-        public virtual RotationCategory RotationCategory { get; set; }
-        public virtual Technique Technique { get; set; }
+        public virtual RelativeDirection RelativeDirectionNameNavigation { get; set; }
+        public virtual RotationCategory RotationCategoryNameNavigation { get; set; }
+        public virtual Technique TechniqueNameNavigation { get; set; }
         public virtual ICollection<Movement> Movement { get; set; }
         public virtual ICollection<TransitionCategoryTransition> TransitionCategoryTransition { get; set; }
     }

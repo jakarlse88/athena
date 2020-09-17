@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Athena.Models.NewEntities
 {
-    public partial class FormFamily : IEntityBase
+    public partial class FormFamily
     {
         public FormFamily()
         {
             Form = new HashSet<Form>();
         }
 
-        public int Id { get; set; }
         public string Name { get; set; }
         public string NameHangeul { get; set; }
         public string NameHanja { get; set; }

@@ -32,10 +32,12 @@ namespace Athena.Test.ControllerTests
         public async Task TestPostModelNotNull()
         {
             // Arrange
+            var testName = "test";
+            
             var mockService = new Mock<ITechniqueService>();
             mockService
                 .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueViewModel>()))
-                .ReturnsAsync(new TechniqueViewModel { Id = 1 })
+                .ReturnsAsync(new TechniqueViewModel { Name = testName })
                 .Verifiable();
             
             var controller = new TechniqueController(mockService.Object);
@@ -47,7 +49,7 @@ namespace Athena.Test.ControllerTests
             var actionResult = Assert.IsAssignableFrom<CreatedAtActionResult>(result);
             Assert.Equal("Get", actionResult.ActionName);
             var modelResult = Assert.IsAssignableFrom<TechniqueViewModel>(actionResult.Value);
-            Assert.Equal(1, modelResult.Id);
+            Assert.Equal(testName, modelResult.Name);
             
             mockService
                 .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueViewModel>()), Times.Once);

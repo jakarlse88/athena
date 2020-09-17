@@ -25,11 +25,15 @@ namespace Athena.Test.ServiceTests
             _mapper = new Mapper(config);
         }
 
+        /**
+         * Create
+         */
+        
         [Fact]
         public async Task TestCreateAsyncModelNull()
         {
             // Arrange
-            var service = new TechniqueService(null, null);
+            var service = new TechniqueService(null, null, null, null);
 
             // Act
             async Task<TechniqueViewModel> TestAction() =>
@@ -44,7 +48,7 @@ namespace Athena.Test.ServiceTests
         public async Task TestCreateAsyncModelNameNull()
         {
             // Arrange
-            var service = new TechniqueService(null, null);
+            var service = new TechniqueService(null, null, null, null);
 
             // Act
             async Task<TechniqueViewModel> TestAction() =>
@@ -61,36 +65,30 @@ namespace Athena.Test.ServiceTests
             // Arrange
             var model = new TechniqueViewModel
             {
-                TechniqueCategoryId = 1,
-                TechniqueTypeId = 1,
+                TechniqueCategoryName = "Test",
+                TechniqueTypeName = "Test",
                 Name = "Arae-makgi"
             };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork
-                .Setup(x => x.TechniqueRepository.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()))
-                .ReturnsAsync(new List<Technique>())
+            var mockTechniqueRepository = new Mock<IRepository<Technique>>();
+            mockTechniqueRepository
+                .Setup(x => x.Insert(It.IsAny<Technique>()))
                 .Verifiable();
 
-            mockUnitOfWork
-                .Setup(x => x.TechniqueRepository.Add(It.IsAny<Technique>()))
+            var mockTechniqueCategoryRepository = new Mock<IRepository<TechniqueCategory>>();
+            mockTechniqueCategoryRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()))
+                .ReturnsAsync(new List<TechniqueCategory> { new TechniqueCategory { Name = "Test" } })
                 .Verifiable();
 
-            mockUnitOfWork
-                .Setup(x => x.TechniqueCategoryRepository.GetByIdAsync(1))
-                .ReturnsAsync(new TechniqueCategory { Id = 1 })
+            var mockTechniqueTypeRepository = new Mock<IRepository<TechniqueType>>();
+            mockTechniqueTypeRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType> { new TechniqueType { Name = "Test" } })
                 .Verifiable();
 
-            mockUnitOfWork
-                .Setup(x => x.TechniqueTypeRepository.GetByIdAsync(1))
-                .ReturnsAsync(new TechniqueType { Id = 1 })
-                .Verifiable();
-
-            mockUnitOfWork
-                .Setup(x => x.CommitAsync())
-                .Verifiable();
-
-            var service = new TechniqueService(mockUnitOfWork.Object, _mapper);
+            var service = new TechniqueService(_mapper, mockTechniqueRepository.Object,
+                mockTechniqueTypeRepository.Object, mockTechniqueCategoryRepository.Object);
 
             // Act
             var result = await service.CreateAsync(model);
@@ -100,103 +98,102 @@ namespace Athena.Test.ServiceTests
             Assert.IsAssignableFrom<TechniqueViewModel>(result);
             Assert.Equal(model.Name, result.Name);
 
-            mockUnitOfWork
-                .Verify(x =>
-                        x.TechniqueRepository.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()),
+            mockTechniqueRepository
+                .Verify(x => x.Insert(It.IsAny<Technique>()), Times.Once);
+
+            mockTechniqueCategoryRepository
+                .Verify(x => 
+                    x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()), 
                     Times.Once);
 
-            mockUnitOfWork
-                .Verify(x => x.TechniqueRepository.Add(It.IsAny<Technique>()),
+            mockTechniqueTypeRepository
+                .Verify(x => 
+                    x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()), 
                     Times.Once);
-
-            mockUnitOfWork
-                .Verify(x => x.TechniqueCategoryRepository.GetByIdAsync(1), Times.Once());
-
-            mockUnitOfWork
-                .Verify(x => x.TechniqueTypeRepository.GetByIdAsync(1), Times.Once());
-
-            mockUnitOfWork
-                .Verify(x => x.CommitAsync(), Times.Once());
         }
 
         [Fact]
-        public async Task TestCreateAsyncException()
+        public async Task TestCreateAsyncTechniqueTypeNotFound()
         {
             // Arrange
             var model = new TechniqueViewModel
             {
-                TechniqueCategoryId = 1,
-                TechniqueTypeId = 1,
+                TechniqueCategoryName = "Test",
+                TechniqueTypeName = "Test",
                 Name = "Arae-makgi"
             };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork
-                .Setup(x => x.TechniqueRepository.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()))
-                .ReturnsAsync(new List<Technique>())
+            var mockTechniqueRepository = new Mock<IRepository<Technique>>();
+
+            var mockTechniqueCategoryRepository = new Mock<IRepository<TechniqueCategory>>();
+            mockTechniqueCategoryRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()))
+                .ReturnsAsync(new List<TechniqueCategory> { new TechniqueCategory { Name = "Test" } })
                 .Verifiable();
 
-            mockUnitOfWork
-                .Setup(x => x.TechniqueRepository.Add(It.IsAny<Technique>()))
+            var mockTechniqueTypeRepository = new Mock<IRepository<TechniqueType>>();
+            mockTechniqueTypeRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType>())
                 .Verifiable();
 
-            mockUnitOfWork
-                .Setup(x => x.TechniqueCategoryRepository.GetByIdAsync(1))
-                .ThrowsAsync(new ArgumentNullException())
-                .Verifiable();
-
-            mockUnitOfWork
-                .Setup(x => x.RollbackAsync())
-                .Verifiable();
-
-            var service = new TechniqueService(mockUnitOfWork.Object, _mapper);
+            var service = new TechniqueService(_mapper, mockTechniqueRepository.Object,
+                mockTechniqueTypeRepository.Object, mockTechniqueCategoryRepository.Object);
 
             // Act
-            var result = await service.CreateAsync(model);
+            async Task<TechniqueViewModel> TestAction() => await service.CreateAsync(model);
 
             // Assert
-            Assert.Null(result);
+            var ex = await Assert.ThrowsAsync<Exception>(TestAction);
+            Assert.Equal(
+                $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueType)} entity with the Name <{model.TechniqueTypeName}>.",
+                ex.Message);
 
-            mockUnitOfWork
+            mockTechniqueCategoryRepository
                 .Verify(x =>
-                        x.TechniqueRepository.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()),
+                        x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()),
                     Times.Once);
 
-            mockUnitOfWork
-                .Verify(x => x.TechniqueCategoryRepository.GetByIdAsync(1), Times.Once());
-
-            mockUnitOfWork
-                .Verify(x => x.RollbackAsync(), Times.Once());
+            mockTechniqueTypeRepository
+                .Verify(x =>
+                        x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()),
+                    Times.Once);
         }
 
         [Fact]
-        public async Task TestCreateDuplicateName()
+        public async Task TestCreateAsyncTechniqueCategoryNotFound()
         {
             // Arrange
             var model = new TechniqueViewModel
             {
-                TechniqueCategoryId = 1,
-                TechniqueTypeId = 1,
+                TechniqueCategoryName = "Test",
+                TechniqueTypeName = "Test",
                 Name = "Arae-makgi"
             };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork
-                .Setup(x => x.TechniqueRepository.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()))
-                .ReturnsAsync(new List<Technique> { new Technique() })
+            var mockTechniqueRepository = new Mock<IRepository<Technique>>();
+
+            var mockTechniqueCategoryRepository = new Mock<IRepository<TechniqueCategory>>();
+            mockTechniqueCategoryRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()))
+                .ReturnsAsync(new List<TechniqueCategory>())
                 .Verifiable();
 
-            var service = new TechniqueService(mockUnitOfWork.Object, _mapper);
+            var mockTechniqueTypeRepository = new Mock<IRepository<TechniqueType>>();
+
+            var service = new TechniqueService(_mapper, mockTechniqueRepository.Object,
+                mockTechniqueTypeRepository.Object, mockTechniqueCategoryRepository.Object);
 
             // Act
-            var result = await service.CreateAsync(model);
+            async Task<TechniqueViewModel> TestAction() => await service.CreateAsync(model);
 
             // Assert
-            Assert.Null(result);
+            var ex = await Assert.ThrowsAsync<Exception>(TestAction);
+            Assert.Equal($"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueCategory)} entity with the Name <{model.TechniqueCategoryName}>.", ex.Message);
 
-            mockUnitOfWork
-                .Verify(x =>
-                        x.TechniqueRepository.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()),
+            mockTechniqueCategoryRepository
+                .Verify(x => 
+                        x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()), 
                     Times.Once);
         }
     }

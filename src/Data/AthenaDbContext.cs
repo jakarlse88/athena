@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Athena.Models.NewEntities;
 
 namespace Athena.Data
@@ -18,8 +16,8 @@ namespace Athena.Data
 
         public virtual DbSet<Form> Form { get; set; }
         public virtual DbSet<FormFamily> FormFamily { get; set; }
-        public virtual DbSet<FormMovement> FormMovement { get; set; }
         public virtual DbSet<Movement> Movement { get; set; }
+        public virtual DbSet<NumberInSequence> NumberInSequence { get; set; }
         public virtual DbSet<RelativeDirection> RelativeDirection { get; set; }
         public virtual DbSet<RotationCategory> RotationCategory { get; set; }
         public virtual DbSet<Stance> Stance { get; set; }
@@ -36,6 +34,8 @@ namespace Athena.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=AthenaDb;Trusted_Connection=True;");
             }
         }
 
@@ -43,7 +43,19 @@ namespace Athena.Data
         {
             modelBuilder.Entity<Form>(entity =>
             {
-                entity.Property(e => e.Name)
+                entity.HasKey(e => e.Name);
+
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_Form_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_Form_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.FormFamilyName)
                     .IsRequired()
                     .HasMaxLength(50);
 
@@ -51,52 +63,57 @@ namespace Athena.Data
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
 
-                entity.HasOne(d => d.FormFamily)
+                entity.HasOne(d => d.FormFamilyNameNavigation)
                     .WithMany(p => p.Form)
-                    .HasForeignKey(d => d.FormFamilyId)
+                    .HasForeignKey(d => d.FormFamilyName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Form_FormFamily");
             });
 
             modelBuilder.Entity<FormFamily>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_FormFamily_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_FormFamily_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.NameHangeul).HasMaxLength(50);
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<FormMovement>(entity =>
-            {
-                entity.HasKey(e => new { e.FormId, e.MovementId });
-
-                entity.HasOne(d => d.Form)
-                    .WithMany(p => p.FormMovement)
-                    .HasForeignKey(d => d.FormId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_FormMovement_Form");
-
-                entity.HasOne(d => d.Movement)
-                    .WithMany(p => p.FormMovement)
-                    .HasForeignKey(d => d.MovementId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_FormMovement_Movement");
-            });
-
             modelBuilder.Entity<Movement>(entity =>
             {
-                entity.HasOne(d => d.Stance)
+                entity.HasIndex(e => new { e.StanceName, e.TechniqueName, e.TransitionId })
+                    .HasName("UK_Movement")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.StanceName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.TechniqueName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.StanceNameNavigation)
                     .WithMany(p => p.Movement)
-                    .HasForeignKey(d => d.StanceId)
+                    .HasForeignKey(d => d.StanceName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Movement_Stance");
 
-                entity.HasOne(d => d.Technique)
+                entity.HasOne(d => d.TechniqueNameNavigation)
                     .WithMany(p => p.Movement)
-                    .HasForeignKey(d => d.TechniqueId)
+                    .HasForeignKey(d => d.TechniqueName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Movement_Technique");
 
@@ -107,129 +124,213 @@ namespace Athena.Data
                     .HasConstraintName("FK_Movement_Transition");
             });
 
+            modelBuilder.Entity<NumberInSequence>(entity =>
+            {
+                entity.HasKey(e => new { e.FormName, e.MovementId, e.OrdinalNumber });
+
+                entity.Property(e => e.FormName).HasMaxLength(50);
+
+                entity.HasOne(d => d.FormNameNavigation)
+                    .WithMany(p => p.NumberInSequence)
+                    .HasForeignKey(d => d.FormName)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_NumberInSequence_Form");
+
+                entity.HasOne(d => d.Movement)
+                    .WithMany(p => p.NumberInSequence)
+                    .HasForeignKey(d => d.MovementId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_NumberInSequence_Movement");
+            });
+
             modelBuilder.Entity<RelativeDirection>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<RotationCategory>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Stance>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_Stance_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_Stance_NameHanja")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.Name, e.StanceCategoryName, e.StanceTypeName })
+                    .HasName("UK_Stance")
+                    .IsUnique();
+
+                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.NameHangeul).HasMaxLength(50);
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
 
-                entity.HasOne(d => d.StanceCategory)
+                entity.Property(e => e.StanceCategoryName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.StanceTypeName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.StanceCategoryNameNavigation)
                     .WithMany(p => p.Stance)
-                    .HasForeignKey(d => d.StanceCategoryId)
+                    .HasForeignKey(d => d.StanceCategoryName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Stance_StanceCategory");
 
-                entity.HasOne(d => d.StanceType)
+                entity.HasOne(d => d.StanceTypeNameNavigation)
                     .WithMany(p => p.Stance)
-                    .HasForeignKey(d => d.StanceTypeId)
+                    .HasForeignKey(d => d.StanceTypeName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Stance_StanceType");
             });
 
             modelBuilder.Entity<StanceCategory>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<StanceType>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Technique>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name)
+                    .HasName("PK_Technique_1");
+
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_Technique_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_Technique_NameHanja")
+                    .IsUnique();
+
+                entity.HasIndex(e => new { e.Name, e.TechniqueCategoryName, e.TechniqueTypeName })
+                    .HasName("UK_Technique")
+                    .IsUnique();
+
+                entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.NameHangeul).HasMaxLength(50);
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
 
-                entity.HasOne(d => d.TechniqueCategory)
+                entity.Property(e => e.TechniqueCategoryName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.TechniqueTypeName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.TechniqueCategoryNameNavigation)
                     .WithMany(p => p.Technique)
-                    .HasForeignKey(d => d.TechniqueCategoryId)
+                    .HasForeignKey(d => d.TechniqueCategoryName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Technique_TechniqueCategory");
 
-                entity.HasOne(d => d.TechniqueType)
+                entity.HasOne(d => d.TechniqueTypeNameNavigation)
                     .WithMany(p => p.Technique)
-                    .HasForeignKey(d => d.TechniqueTypeId)
+                    .HasForeignKey(d => d.TechniqueTypeName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Technique_TechniqueType");
             });
 
             modelBuilder.Entity<TechniqueCategory>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<TechniqueType>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Transition>(entity =>
             {
-                entity.HasOne(d => d.RelationDirection)
+                entity.HasIndex(e => new { e.RelativeDirectionName, e.RotationCategoryName, e.StanceName, e.TechniqueName })
+                    .HasName("UK_Transition")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.RelativeDirectionName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RotationCategoryName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.StanceName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.TechniqueName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.HasOne(d => d.RelativeDirectionNameNavigation)
                     .WithMany(p => p.Transition)
-                    .HasForeignKey(d => d.RelationDirectionId)
+                    .HasForeignKey(d => d.RelativeDirectionName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transition_RelativeDirection");
 
-                entity.HasOne(d => d.RotationCategory)
+                entity.HasOne(d => d.RotationCategoryNameNavigation)
                     .WithMany(p => p.Transition)
-                    .HasForeignKey(d => d.RotationCategoryId)
+                    .HasForeignKey(d => d.RotationCategoryName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transition_RotationCategory");
 
-                entity.HasOne(d => d.Technique)
+                entity.HasOne(d => d.TechniqueNameNavigation)
                     .WithMany(p => p.Transition)
-                    .HasForeignKey(d => d.TechniqueId)
+                    .HasForeignKey(d => d.TechniqueName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Transition_Technique");
             });
 
             modelBuilder.Entity<TransitionCategory>(entity =>
             {
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasKey(e => e.Name);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<TransitionCategoryTransition>(entity =>
             {
-                entity.HasKey(e => new { e.TransitionId, e.TransitionCategoryId });
+                entity.HasKey(e => new { e.TransitionCategoryName, e.TransitionId });
 
-                entity.HasOne(d => d.TransitionCategory)
+                entity.Property(e => e.TransitionCategoryName).HasMaxLength(50);
+
+                entity.HasOne(d => d.TransitionCategoryNameNavigation)
                     .WithMany(p => p.TransitionCategoryTransition)
-                    .HasForeignKey(d => d.TransitionCategoryId)
+                    .HasForeignKey(d => d.TransitionCategoryName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TransitionCategoryTransition_TransitionCategory");
 

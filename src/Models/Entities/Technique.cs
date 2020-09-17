@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Athena.Models.NewEntities
 {
-    public partial class Technique : IEntityBase
+    public partial class Technique
     {
         public Technique()
         {
@@ -11,15 +10,14 @@ namespace Athena.Models.NewEntities
             Transition = new HashSet<Transition>();
         }
 
-        public int Id { get; set; }
-        public int TechniqueTypeId { get; set; }
-        public int TechniqueCategoryId { get; set; }
         public string Name { get; set; }
+        public string TechniqueTypeName { get; set; }
+        public string TechniqueCategoryName { get; set; }
         public string NameHangeul { get; set; }
         public string NameHanja { get; set; }
 
-        public virtual TechniqueCategory TechniqueCategory { get; set; }
-        public virtual TechniqueType TechniqueType { get; set; }
+        public virtual TechniqueCategory TechniqueCategoryNameNavigation { get; set; }
+        public virtual TechniqueType TechniqueTypeNameNavigation { get; set; }
         public virtual ICollection<Movement> Movement { get; set; }
         public virtual ICollection<Transition> Transition { get; set; }
     }
