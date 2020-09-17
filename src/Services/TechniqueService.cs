@@ -49,6 +49,28 @@ namespace Athena.Services
             return _mapper.Map<TechniqueViewModel>(entity);
         }
 
+        /// <summary>
+        /// Gets a <see cref="Technique"/> entity by its Name property.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task<TechniqueViewModel> GetByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            var result =
+                await _techniqueRepository
+                    .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
+
+            return result.Any() 
+                ? _mapper.Map<TechniqueViewModel>(result.FirstOrDefault()) 
+                : null;
+        }
+
         /**
          *
          * Private helper methods

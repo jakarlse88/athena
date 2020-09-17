@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Athena.Controllers;
 using Athena.Services;
 using Athena.ViewModels;
@@ -11,15 +12,85 @@ namespace Athena.Test.ControllerTests
     public class TechniqueControllerTests
     {
         /**
+         * Get()
+         */
+        [Theory]
+        [InlineData(null)]
+        [InlineData(" ")]
+        [InlineData("Test!")]
+        [InlineData(" &%&&")]
+        [InlineData("t3st")]
+        public async Task TestGetInvalidName(string testName)
+        {
+            // Arrange
+            var controller = new TechniqueController(null);
+
+            // Act
+            var result = await controller.Get(testName);
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task TestGetEntityFound()
+        {
+            // Arrange
+            const string testName = "Test";
+
+            var mockService = new Mock<ITechniqueService>();
+            mockService
+                .Setup(x => x.GetByNameAsync(testName))
+                .ReturnsAsync(new TechniqueViewModel { Name = testName })
+                .Verifiable();
+
+            var controller = new TechniqueController(mockService.Object);
+
+            // Act
+            var result = await controller.Get(testName);
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<OkObjectResult>(result);
+            var modelResult = Assert.IsAssignableFrom<TechniqueViewModel>(actionResult.Value);
+            Assert.Equal(testName, modelResult.Name);
+
+            mockService
+                .Verify(x => x.GetByNameAsync(It.IsAny<string>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestGetEntityNotFound()
+        {
+            // Arrange
+            const string testName = "Test";
+
+            var mockService = new Mock<ITechniqueService>();
+            mockService
+                .Setup(x => x.GetByNameAsync(testName))
+                .ReturnsAsync(new TechniqueViewModel())
+                .Verifiable();
+
+            var controller = new TechniqueController(mockService.Object);
+
+            // Act
+            var result = await controller.Get("Incorrect name");
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<NotFoundResult>(result);
+
+            mockService
+                .Verify(x => x.GetByNameAsync(It.IsAny<string>()), Times.Once());
+        }
+
+        /**
          * Post()
          */
-        
         [Fact]
         public async Task TestPostModelNull()
         {
             // Arrange
             var controller = new TechniqueController(null);
-            
+
             // Act
             var result = await controller.Post(null);
 
@@ -32,15 +103,15 @@ namespace Athena.Test.ControllerTests
         {
             // Arrange
             var testName = "test";
-            
+
             var mockService = new Mock<ITechniqueService>();
             mockService
                 .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueViewModel>()))
                 .ReturnsAsync(new TechniqueViewModel { Name = testName })
                 .Verifiable();
-            
+
             var controller = new TechniqueController(mockService.Object);
-            
+
             // Act
             var result = await controller.Post(new TechniqueViewModel());
 
@@ -49,7 +120,7 @@ namespace Athena.Test.ControllerTests
             Assert.Equal("Get", actionResult.ActionName);
             var modelResult = Assert.IsAssignableFrom<TechniqueViewModel>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
-            
+
             mockService
                 .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueViewModel>()), Times.Once);
         }

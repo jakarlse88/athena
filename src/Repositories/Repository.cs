@@ -62,7 +62,7 @@ namespace Athena.Repositories
                 await _context
                     .Set<TEntity>()
                     .Where(predicate)
-                    .ToArrayAsync();
+                    .ToListAsync();
 
             return result;
         }

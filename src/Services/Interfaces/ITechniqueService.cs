@@ -6,5 +6,6 @@ namespace Athena.Services
     public interface ITechniqueService
     {
         Task<TechniqueViewModel> CreateAsync(TechniqueViewModel model);
+        Task<TechniqueViewModel> GetByNameAsync(string name);
     }
 }

@@ -25,7 +25,72 @@ namespace Athena.Test.ServiceTests
         }
 
         /**
-         * Create
+         * GetByName()
+         */
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("   ")]
+        public async Task TestGetByNameAsyncNameNull(string testString)
+        {
+            // Arrange
+            var service = new TechniqueService(null, null, null, null);
+
+            // Act
+            async Task<TechniqueViewModel> TestAction() => await service.GetByNameAsync(testString);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            Assert.Equal("name", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestGetByNameAsyncEntityFound()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<Technique>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()))
+                .ReturnsAsync(new [] { new Technique() })
+                .Verifiable();
+
+            var service = new TechniqueService(_mapper, mockRepository.Object, null, null);
+            
+            // Act
+            var result = await service.GetByNameAsync("test");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<TechniqueViewModel>(result);
+            
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestGetByNameAsyncEntityNotFound()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<Technique>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()))
+                .ReturnsAsync(new List<Technique>() )
+                .Verifiable();
+
+            var service = new TechniqueService(null, mockRepository.Object, null, null);
+            
+            // Act
+            var result = await service.GetByNameAsync("test");
+
+            // Assert
+            Assert.Null(result);
+            
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()), Times.Once());
+        }
+        
+        /**
+         * CreateAsync()
          */
         
         [Fact]
