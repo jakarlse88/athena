@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Athena.Infrastructure.Validators;
+﻿using Athena.Infrastructure.Validators;
 using FluentValidation.TestHelper;
 using Xunit;
 

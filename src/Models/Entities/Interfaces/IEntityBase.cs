@@ -1,4 +1,4 @@
-﻿namespace Athena.Models
+﻿namespace Athena.Models.Entities
 {
     public interface IEntityBase
     {

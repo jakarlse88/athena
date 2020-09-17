@@ -1,4 +1,4 @@
-﻿using Athena.Models.NewEntities;
+﻿using Athena.Models.Entities;
 using Athena.ViewModels;
 using AutoMapper;
 

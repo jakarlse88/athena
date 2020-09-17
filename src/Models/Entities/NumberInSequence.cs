@@ -1,4 +1,4 @@
-﻿namespace Athena.Models.NewEntities
+﻿namespace Athena.Models.Entities
 {
     public partial class NumberInSequence
     {
