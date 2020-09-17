@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Athena.Models.NewEntities;
+﻿using Athena.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Athena.Data
 {

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.MappingProfiles;
-using Athena.Models.NewEntities;
+using Athena.Models.Entities;
 using Athena.Repositories;
 using Athena.Services;
 using Athena.ViewModels;
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 

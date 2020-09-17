@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Athena.Models.NewEntities;
+using Athena.ViewModels;
 
 namespace Athena.Services
 {
     public interface ITechniqueTypeService
     {
-        Task<TechniqueType> CreateAsync(TechniqueTypeViewModel model);
+        Task<TechniqueTypeViewModel> CreateAsync(TechniqueTypeViewModel model);
     }
 }

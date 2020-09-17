@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Athena.Models.NewEntities;
+using Athena.Models.Entities;
 using Athena.Services;
 using Athena.ViewModels;
 using Microsoft.AspNetCore.Authorization;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Athena.Controllers;
 using Athena.Services;
 using Athena.ViewModels;

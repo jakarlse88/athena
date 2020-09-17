@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Athena.Models.NewEntities;
+using Athena.Models.Entities;
 using Athena.Repositories;
 using Athena.ViewModels;
 using AutoMapper;

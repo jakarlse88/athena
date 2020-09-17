@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Athena.Models.NewEntities
+namespace Athena.Models.Entities
 {
     public partial class Transition
     {

@@ -23,6 +23,7 @@ namespace Athena.Infrastructure
         internal static IServiceCollection ConfigureServiceLayer(this IServiceCollection services)
         {
             services.AddTransient<ITechniqueService, TechniqueService>();
+            services.AddTransient<ITechniqueTypeService, TechniqueTypeService>();
 
             return services;
         }
