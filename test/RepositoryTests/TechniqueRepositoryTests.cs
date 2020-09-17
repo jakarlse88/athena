@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Athena.Data;
 using Athena.Models.NewEntities;
@@ -22,17 +23,15 @@ namespace Athena.Test.RepositoryTests
             {
                 new Technique
                 {
-                    Id = 1,
                     Name = "Arae-makgi"
                 },
                 new Technique
                 {
-                    Id = 2,
                     Name = "Momtong an-makgi"
                 },
                 new Technique
                 {
-                    Id = 3, Name = "Eolgul-makgi"
+                    Name = "Eolgul-makgi"
                 }
             };
         }
@@ -73,112 +72,40 @@ namespace Athena.Test.RepositoryTests
         public async Task TestGetByConditionPredicateNull()
         {
             // Arrange
-            var unitOfWork = new UnitOfWork(null);
+            var repository = new Repository<Technique>(null);
             
             // Act
             async Task<IEnumerable<Technique>> TestAction() => 
-                await unitOfWork.TechniqueRepository.GetByConditionAsync(null);
+                await repository.GetByConditionAsync(null);
 
             // Assert
             var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
             Assert.Equal("predicate", ex.ParamName);
         }
-
-        /**
-         * GetById
-         */
-        
-        [Fact]
-        public async Task TestGetBydIdOutOfRange()
-        {
-            // Arrange
-            var unitOfWork = new UnitOfWork(null);
-            
-            // Act
-            async Task TestAction() => await unitOfWork.TechniqueRepository.GetByIdAsync(0);
-
-            // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(TestAction);
-            Assert.Equal("id", ex.ParamName);
-        }
-
-        [Fact]
-        public async Task TestGetByIdValid()
-        {
-            // Arrange
-            var options = GenerateInMemoryDbContextOptions();
-
-            Technique result;
-
-            await using (var context = new AthenaDbContext(options))
-            {
-                await context.Database.EnsureCreatedAsync();
-                
-                SeedInMemoryTestDb(context);
-
-                var repository = new Repository<Technique>(context);
-
-                // Act
-                result = await repository.GetByIdAsync(1);
-
-                await context.Database.EnsureDeletedAsync();
-            }
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsType<Technique>(result);
-            Assert.Equal("Arae-makgi", result.Name);
-        }
-
-        [Fact]
-        public async Task TestGetByIdInvalid()
-        {
-            // Arrange
-            var options = GenerateInMemoryDbContextOptions();
-
-            Technique result = null;
-
-            await using (var context = new AthenaDbContext(options))
-            {
-                await context.Database.EnsureCreatedAsync();
-                
-                SeedInMemoryTestDb(context);
-
-                var repository = new Repository<Technique>(context);
-
-                // Act
-                result = await repository.GetByIdAsync(1);
-
-                await context.Database.EnsureDeletedAsync();
-            }
-
-            // Assert
-            Assert.NotNull(result);
-        }
         
         /**
-         * Add()
+         * Insert()
          */
         [Fact]
-        public void TestAddEntityNull()
+        public async Task TestInsertAsyncNull()
         {
             // Arrange
-            var unitOfWork = new UnitOfWork(null);
+            var repository = new Repository<Technique>(null);
 
             // Act
-            void TestAction() => unitOfWork.TechniqueRepository.Add(null);
+            async Task TestAction() => await repository.Insert(null);
 
             // Assert
-            var ex = Assert.Throws<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
             Assert.Equal("entity", ex.ParamName);
         }
 
         [Fact]
-        public void TestAddEntityValid()
+        public void TestInsertAsyncValid()
         {
             var mockContext = new Mock<AthenaDbContext>();
             mockContext
-                .Setup(x => x.Set<Technique>().Add(It.IsAny<Technique>()))
+                .Setup(x => x.Add(It.IsAny<Technique>()))
                 .Verifiable();
 
             var repository = new Repository<Technique>(mockContext.Object);
@@ -186,19 +113,40 @@ namespace Athena.Test.RepositoryTests
             var entity = new Technique();
             
             // Act
-            repository.Add(entity);
+            repository.Insert(entity);
 
             // Assert
             mockContext
-                .Verify(x => x.Set<Technique>().Add(It.IsAny<Technique>()), Times.Once);
+                .Verify(x => x.Add(It.IsAny<Technique>()), Times.Once);
         }
 
+        [Fact]
+        public async Task TestInsertAsyncThrows()
+        {
+            var mockContext = new Mock<AthenaDbContext>();
+            mockContext
+                .Setup(x => x.Add(It.IsAny<Technique>()))
+                .Throws<Exception>()
+                .Verifiable();
 
+            var repository = new Repository<Technique>(mockContext.Object);
+            
+            var entity = new Technique();
+            
+            // Act
+            async Task<Technique> TestAction() => await repository.Insert(entity);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<Exception>(TestAction);
+            
+            mockContext
+                .Verify(x => x.Add(It.IsAny<Technique>()), Times.Once);
+        }
 
         /**
          * Internal helper methods
          */
-        void SeedInMemoryTestDb(AthenaDbContext context)
+        private void SeedInMemoryTestDb(AthenaDbContext context)
         {
             context.AddRange(_techniques);
 

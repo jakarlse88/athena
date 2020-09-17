@@ -5,19 +5,23 @@ using Athena.Models.NewEntities;
 using Athena.Repositories;
 using Athena.ViewModels;
 using AutoMapper;
-using Serilog;
 
 namespace Athena.Services
 {
     public class TechniqueService : ITechniqueService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<Technique> _techniqueRepository;
+        private readonly IRepository<TechniqueType> _techniqueTypeRepository;
+        private readonly IRepository<TechniqueCategory> _techniqueCategoryRepository;
         private readonly IMapper _mapper;
 
-        public TechniqueService(IUnitOfWork unitOfWork, IMapper mapper)
+        public TechniqueService(IMapper mapper, IRepository<Technique> techniqueRepository,
+            IRepository<TechniqueType> techniqueTypeRepository, IRepository<TechniqueCategory> techniqueCategoryRepository)
         {
-            _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _techniqueRepository = techniqueRepository;
+            _techniqueTypeRepository = techniqueTypeRepository;
+            _techniqueCategoryRepository = techniqueCategoryRepository;
         }
 
         /// <summary>
@@ -38,28 +42,11 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(model.Name));
             }
 
-            // how do we handle this?
-            if (!await NoDuplicateTechniqueName(model.Name))
-            {
-                try
-                {
-                    var entity = await MapNewEntity(model);
+            var entity = await MapNewEntity(model);
 
-                    _unitOfWork.TechniqueRepository.Add(entity);
+            await _techniqueRepository.Insert(entity);
 
-                    await _unitOfWork.CommitAsync();
-
-                    return _mapper.Map<TechniqueViewModel>(entity);
-                }
-                catch (Exception e)
-                {
-                    await _unitOfWork.RollbackAsync();
-
-                    Log.Error($"An error occurred while attempting to insert a {nameof(Technique)} entity: {@e}", e);
-                }
-            }
-
-            return null;
+            return _mapper.Map<TechniqueViewModel>(entity);
         }
 
         /**
@@ -67,7 +54,6 @@ namespace Athena.Services
          * Private helper methods
          * 
          */
-        
         /// <summary>
         /// Maps a given <see cref="TechniqueViewModel"/> model to a new <seealso cref="Technique"/> entity.
         /// </summary>
@@ -79,41 +65,41 @@ namespace Athena.Services
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            
+
             var entity = new Technique
             {
-                TechniqueCategory = await GetTechniqueCategory(model.TechniqueCategoryId),
-                TechniqueType = await GetTechniqueType(model.TechniqueTypeId),
+                TechniqueCategoryNameNavigation = await GetTechniqueCategory(model.TechniqueCategoryName),
+                TechniqueTypeNameNavigation = await GetTechniqueType(model.TechniqueTypeName),
                 Name = model.Name,
                 NameHangeul = model.NameHangeul,
                 NameHanja = model.NameHanja
             };
-            
+
             return entity;
         }
 
         /// <summary>
         /// Gets a <see cref="TechniqueType"/> entity by its ID.
         /// </summary>
-        /// <returns></returns>
+        /// <returns></returns>y
         /// <exception cref="Exception"></exception>
-        private async Task<TechniqueType> GetTechniqueType(int id)
+        private async Task<TechniqueType> GetTechniqueType(string name)
         {
-            if (id <= 0)
+            if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentOutOfRangeException(nameof(id));
+                throw new ArgumentNullException(nameof(name));
             }
-            
-            var techniqueType =
-                await _unitOfWork.TechniqueTypeRepository.GetByIdAsync(id);
 
-            if (techniqueType == null)
+            var techniqueType =
+                await _techniqueTypeRepository.GetByConditionAsync(x => x.Name.ToLower() == name.ToLower());
+
+            if (!techniqueType.Any())
             {
                 throw new Exception(
-                    $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueType)} entity with the ID <{id}>.");
+                    $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueType)} entity with the Name <{name}>.");
             }
 
-            return techniqueType;
+            return techniqueType.FirstOrDefault();
         }
 
         /// <summary>
@@ -121,41 +107,23 @@ namespace Athena.Services
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        private async Task<TechniqueCategory> GetTechniqueCategory(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(id));
-            }
-            
-            var techniqueCategory =
-                await _unitOfWork.TechniqueCategoryRepository.GetByIdAsync(id);
-
-            if (techniqueCategory == null)
-            {
-                throw new Exception(
-                    $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueCategory)} entity with the ID <{id}>.");
-            }
-
-            return techniqueCategory;
-        }
-
-        /// <summary>
-        /// Determines whether there already exists an entity with a given name. 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private async Task<bool> NoDuplicateTechniqueName(string name)
+        private async Task<TechniqueCategory> GetTechniqueCategory(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
-            
-            var results = await _unitOfWork.TechniqueRepository.GetByConditionAsync(t =>
-                t.Name.ToLower() == name.ToLower());
 
-            return results.Any();
+            var techniqueCategory =
+                await _techniqueCategoryRepository.GetByConditionAsync(x => x.Name.ToLower() == name.ToLower());
+
+            if (!techniqueCategory.Any())
+            {
+                throw new Exception(
+                    $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueCategory)} entity with the Name <{name}>.");
+            }
+
+            return techniqueCategory.FirstOrDefault();
         }
     }
 }

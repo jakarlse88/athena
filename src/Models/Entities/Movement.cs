@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Athena.Models.NewEntities
 {
-    public partial class Movement : IEntityBase
+    public partial class Movement
     {
         public Movement()
         {
-            FormMovement = new HashSet<FormMovement>();
+            NumberInSequence = new HashSet<NumberInSequence>();
         }
 
         public int Id { get; set; }
-        public int StanceId { get; set; }
-        public int TechniqueId { get; set; }
+        public string StanceName { get; set; }
+        public string TechniqueName { get; set; }
         public int TransitionId { get; set; }
-        public byte NumberInSequence { get; set; }
 
-        public virtual Stance Stance { get; set; }
-        public virtual Technique Technique { get; set; }
+        public virtual Stance StanceNameNavigation { get; set; }
+        public virtual Technique TechniqueNameNavigation { get; set; }
         public virtual Transition Transition { get; set; }
-        public virtual ICollection<FormMovement> FormMovement { get; set; }
+        public virtual ICollection<NumberInSequence> NumberInSequence { get; set; }
     }
 }

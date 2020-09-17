@@ -8,11 +8,15 @@ namespace Athena.Infrastructure.Validators
     {
         public TechniqueValidator()
         {
-            RuleFor(model => model.TechniqueCategoryId)
-                .NotEmpty();
+            RuleFor(model => model.TechniqueCategoryName)
+                .NotEmpty()
+                .MaximumLength(50)
+                .Matches(new Regex(@"^[a-zA-Z ]*$"));
 
-            RuleFor(model => model.TechniqueTypeId)
-                .NotEmpty();
+            RuleFor(model => model.TechniqueTypeName)
+                .NotEmpty()
+                .MaximumLength(50)
+                .Matches(new Regex(@"^[a-zA-Z ]*$"));
 
             RuleFor(model => model.Name)
                 .NotEmpty()

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Athena.Data;
-using Athena.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Athena.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntityBase
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, new ()
     {
         private readonly AthenaDbContext _context;
 
@@ -24,14 +24,25 @@ namespace Athena.Repositories
         /// </summary>
         /// <param name="entity"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public void Add(TEntity entity)
+        public async Task<TEntity> Insert(TEntity entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-            
-            _context.Set<TEntity>().Add(entity);
+
+            try
+            {
+                _context.Add(entity);
+                await _context.SaveChangesAsync();
+
+                return entity;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"An error occurred while attempting to insert a new {typeof(TEntity)} entity: {@e}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -54,28 +65,6 @@ namespace Athena.Repositories
                     .ToArrayAsync();
 
             return result;
-        }
-
-        /// <summary>
-        /// Gets a TEntity entity by its ID.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public async Task<TEntity> GetByIdAsync(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(id));
-            }
-
-            var entity = 
-                await _context
-                    .Set<TEntity>()
-                    .Where(x => x.Id == id)
-                    .FirstOrDefaultAsync();
-
-            return entity;
         }
     }
 }
