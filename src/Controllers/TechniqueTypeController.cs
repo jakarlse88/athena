@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Athena.Models.Entities;
 using Athena.Services;
 using Athena.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,17 +10,17 @@ namespace Athena.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TechniqueController : ControllerBase
+    public class TechniqueTypeController : ControllerBase
     {
-        private readonly ITechniqueService _techniqueService;
+        private readonly ITechniqueTypeService _techniqueTypeService;
 
-        public TechniqueController(ITechniqueService techniqueService)
+        public TechniqueTypeController(ITechniqueTypeService techniqueTypeService)
         {
-            _techniqueService = techniqueService;
+            _techniqueTypeService = techniqueTypeService;
         }
 
         /// <summary>
-        /// Gets a <see cref="Technique"/> entity by its Name property.
+        /// Gets a <see cref="TechniqueType"/> entity by its Name property.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -43,9 +42,9 @@ namespace Athena.Controllers
             
             throw new NotImplementedException();
         }
-
+        
         /// <summary>
-        /// Creates a new <see cref="Technique"/> entity.
+        /// Creates a new <see cref="TechniqueType"/> entity.
         /// </summary>
         /// <returns></returns>
         /// <response code="201">Entity was successfully created.</response>
@@ -55,14 +54,15 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Post(TechniqueViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> Post(TechniqueTypeViewModel model)
         {
             if (model == null)
             {
                 return BadRequest();
             }
 
-            var result = await _techniqueService.CreateAsync(model);
+            var result = await _techniqueTypeService.CreateAsync(model);
 
             return CreatedAtAction("Get", new { name = result.Name }, result);
         }
