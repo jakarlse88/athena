@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
 using Athena.Services;
@@ -35,12 +36,17 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name) || 
+                !new Regex(@"^[a-zA-Z ]*$").IsMatch(name)) // Alphabetical/whitespace only
             {
                 return BadRequest();
             }
-            
-            throw new NotImplementedException();
+
+            var result = await _techniqueTypeService.GetByNameAsync(name);
+
+            return result == null
+                ? (IActionResult) NotFound()
+                : Ok(result);
         }
         
         /// <summary>

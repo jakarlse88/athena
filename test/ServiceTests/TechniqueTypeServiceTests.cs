@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.MappingProfiles;
@@ -21,6 +22,71 @@ namespace Athena.Test.ServiceTests
             var config = new MapperConfiguration(opt => { opt.AddProfile(new TechniqueTypeMappingProfile()); });
 
             _mapper = new Mapper(config);
+        }
+
+        /**
+         * GetByName()
+         */
+        
+        [Theory]
+        [InlineData(null)]
+        [InlineData("   ")]
+        public async Task TestGetByNameAsyncNameNull(string testString)
+        {
+            // Arrange
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task<TechniqueTypeViewModel> TestAction() => await service.GetByNameAsync(testString);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            Assert.Equal("name", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestGetByNameAsyncEntityFound()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new[] { new TechniqueType() })
+                .Verifiable();
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetByNameAsync("test");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<TechniqueTypeViewModel>(result);
+
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestGetByNameAsyncEntityNotFound()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType>())
+                .Verifiable();
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetByNameAsync("test");
+
+            // Assert
+            Assert.Null(result);
+
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()), Times.Once());
         }
 
         /**

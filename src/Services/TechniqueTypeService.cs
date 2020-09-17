@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
 using Athena.Repositories;
@@ -16,6 +17,28 @@ namespace Athena.Services
         {
             _techniqueTypeRepository = techniqueTypeRepository;
             _mapper = mapper;
+        }
+        
+        /// <summary>
+        /// Gets a <see cref="Technique"/> entity by its Name property.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task<TechniqueTypeViewModel> GetByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            var result =
+                await _techniqueTypeRepository
+                    .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
+
+            return result.Any() 
+                ? _mapper.Map<TechniqueTypeViewModel>(result.FirstOrDefault()) 
+                : null;
         }
 
         /// <summary>
