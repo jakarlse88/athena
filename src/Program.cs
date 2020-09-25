@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -33,6 +34,11 @@ namespace Athena
             try
             {
                 Log.Information("Starting application.");
+
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                {
+                    IdentityModelEventSource.ShowPII = true;
+                }
 
                 CreateHostBuilder(args).Build().Run();
 

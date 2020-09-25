@@ -21,6 +21,8 @@ namespace Athena
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .ConfigureAuthentication(Configuration)
+                .ConfigureAuthorization()
                 .AddControllers()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
@@ -28,13 +30,12 @@ namespace Athena
                     fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             services
-                .ConfigureAuthentication(Configuration)
                 .ConfigureDbContext(Configuration)
                 .ConfigureRepositoryLayer()
                 .ConfigureServiceLayer()
                 .ConfigureCors()
                 .ConfigureSwagger()
-                .AddAutoMapper(typeof(Startup));
+                .AddAutoMapper(typeof(Startup)); ;
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -42,30 +43,18 @@ namespace Athena
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // I'm assuming I'll be doing something more sophisticated in production.
-                app.ApplyMigrations();
+                app.ApplyMigrations(); // I'm assuming I'll be doing something more sophisticated in production.
             }
 
             app
-                .UseHttpsRedirection()
                 .UseSwaggerUI()
                 .UseRouting()
                 .UseCors()
-                .UseAuthorization()
                 .UseAuthentication()
+                .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
-                    if (env.IsDevelopment())
-                    {
-                        endpoints.MapControllers();
-                    }
-                    else
-                    {
-                        endpoints.MapControllers().RequireAuthorization();
-                    }
+                    endpoints.MapControllers();
                 });
         }
     }
