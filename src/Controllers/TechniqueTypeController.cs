@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Athena.Models.Entities;
 using Athena.Services;
 using Athena.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,7 @@ namespace Athena.Controllers
         /// <response code="401">User not authorized.</response>
         /// <response code="404">Entity was not found.</response>
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

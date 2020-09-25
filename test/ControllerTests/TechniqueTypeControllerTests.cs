@@ -13,7 +13,6 @@ namespace Athena.Test.ControllerTests
         /**
          * Get()
          */
-        
         [Theory]
         [InlineData(null)]
         [InlineData(" ")]
@@ -81,17 +80,16 @@ namespace Athena.Test.ControllerTests
             mockService
                 .Verify(x => x.GetByNameAsync(It.IsAny<string>()), Times.Once());
         }
-        
+
         /**
          * Post()
          */
-        
         [Fact]
         public async Task TestPostModelNull()
         {
             // Arrange
             var controller = new TechniqueTypeController(null);
-            
+
             // Act
             var result = await controller.Post(null);
 
@@ -104,15 +102,15 @@ namespace Athena.Test.ControllerTests
         {
             // Arrange
             const string testName = "test";
-            
+
             var mockService = new Mock<ITechniqueTypeService>();
             mockService
                 .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()))
                 .ReturnsAsync(new TechniqueTypeViewModel { Name = testName })
                 .Verifiable();
-            
+
             var controller = new TechniqueTypeController(mockService.Object);
-            
+
             // Act
             var result = await controller.Post(new TechniqueTypeViewModel());
 
@@ -121,7 +119,7 @@ namespace Athena.Test.ControllerTests
             Assert.Equal("Get", actionResult.ActionName);
             var modelResult = Assert.IsAssignableFrom<TechniqueTypeViewModel>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
-            
+
             mockService
                 .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()), Times.Once);
         }
