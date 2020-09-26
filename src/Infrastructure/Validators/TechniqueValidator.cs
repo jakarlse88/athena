@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Athena.ViewModels;
+using Athena.Models.ViewModels;
 using FluentValidation;
 
 namespace Athena.Infrastructure.Validators

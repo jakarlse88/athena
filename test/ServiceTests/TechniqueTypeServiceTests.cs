@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Athena.Infrastructure.MappingProfiles;
 using Athena.Models.Entities;
+using Athena.Models.MappingProfiles;
+using Athena.Models.ViewModels;
 using Athena.Repositories;
 using Athena.Services;
-using Athena.ViewModels;
 using AutoMapper;
 using Moq;
 using Xunit;
@@ -89,6 +89,23 @@ namespace Athena.Test.ServiceTests
                 .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()), Times.Once());
         }
 
+        [Fact]
+        public async Task TestGetByNameAsyncNameIllegalCharacters()
+        {
+            // Arrange
+            const string testString = "t3chn1que";
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task<TechniqueTypeViewModel> TestAction() => await service.GetByNameAsync(testString);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentException>(TestAction);
+            Assert.Equal("Argument contains one or more invalid characters. (Parameter 'name')", ex.Message);
+            Assert.Equal("name", ex.ParamName);
+        }
+
+        
         /**
          * Create
          */

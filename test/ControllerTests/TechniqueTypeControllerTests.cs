@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Athena.Controllers;
+using Athena.Models.ViewModels;
 using Athena.Services;
-using Athena.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;

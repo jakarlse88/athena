@@ -27,6 +27,7 @@ namespace Athena.Infrastructure
         {
             services.AddTransient<ITechniqueService, TechniqueService>();
             services.AddTransient<ITechniqueTypeService, TechniqueTypeService>();
+            services.AddTransient<ITechniqueCategoryService, TechniqueCategoryService>();
 
             return services;
         }

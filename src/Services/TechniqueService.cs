@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
+using Athena.Models.ViewModels;
 using Athena.Repositories;
-using Athena.ViewModels;
 using AutoMapper;
 
 namespace Athena.Services
@@ -55,6 +56,7 @@ namespace Athena.Services
         /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// /// <exception cref="ArgumentException"><paramref name="name"/> argument contains one or more illegal characters.</exception>
         public async Task<TechniqueViewModel> GetByNameAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -62,12 +64,19 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(name));
             }
 
+            if (!new Regex(@"^[a-zA-Z ]*$").IsMatch(name))
+            {
+                throw new ArgumentException("Argument contains one or more invalid characters.", nameof(name));
+            }
+            
             var result =
                 await _techniqueRepository
                     .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
 
-            return result.Any() 
-                ? _mapper.Map<TechniqueViewModel>(result.FirstOrDefault()) 
+            var technique = result as Technique[] ?? result.ToArray();
+            
+            return technique.Any() 
+                ? _mapper.Map<TechniqueViewModel>(technique.FirstOrDefault()) 
                 : null;
         }
 

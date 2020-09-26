@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
+using Athena.Models.ViewModels;
 using Athena.Repositories;
-using Athena.ViewModels;
 using AutoMapper;
 
 namespace Athena.Services
@@ -20,29 +21,37 @@ namespace Athena.Services
         }
         
         /// <summary>
-        /// Gets a <see cref="Technique"/> entity by its Name property.
+        /// Get a <see cref="TechniqueType"/> entity by its Name property.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"><paramref name="name"/> argument contains one or more illegal characters.</exception>
         public async Task<TechniqueTypeViewModel> GetByNameAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
+            
+            if (!new Regex(@"^[a-zA-Z ]*$").IsMatch(name))
+            {
+                throw new ArgumentException("Argument contains one or more invalid characters.", nameof(name));
+            }
 
             var result =
                 await _techniqueTypeRepository
                     .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
 
-            return result.Any() 
-                ? _mapper.Map<TechniqueTypeViewModel>(result.FirstOrDefault()) 
+            var techniqueType = result as TechniqueType[] ?? result.ToArray();
+            
+            return techniqueType.Any() 
+                ? _mapper.Map<TechniqueTypeViewModel>(techniqueType.FirstOrDefault()) 
                 : null;
         }
 
         /// <summary>
-        /// Creates a new <see cref="Technique"/> entity.
+        /// Create a new <see cref="Technique"/> entity.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

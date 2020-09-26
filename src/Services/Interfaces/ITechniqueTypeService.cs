@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Athena.ViewModels;
+using Athena.Models.ViewModels;
 
 namespace Athena.Services
 {

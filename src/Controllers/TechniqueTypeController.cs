@@ -2,8 +2,8 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
+using Athena.Models.ViewModels;
 using Athena.Services;
-using Athena.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

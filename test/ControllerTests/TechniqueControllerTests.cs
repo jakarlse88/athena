@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Athena.Controllers;
+using Athena.Models.ViewModels;
 using Athena.Services;
-using Athena.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -76,7 +75,7 @@ namespace Athena.Test.ControllerTests
             var result = await controller.Get("Incorrect name");
 
             // Assert
-            var actionResult = Assert.IsAssignableFrom<NotFoundResult>(result);
+            var actionResult = Assert.IsAssignableFrom<NotFoundObjectResult>(result);
 
             mockService
                 .Verify(x => x.GetByNameAsync(It.IsAny<string>()), Times.Once());
