@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
 using Athena.Models.ViewModels;
@@ -73,6 +74,20 @@ namespace Athena.Services
             return techniqueCategory.Any() 
                 ? _mapper.Map<TechniqueCategoryViewModel>(techniqueCategory.FirstOrDefault()) 
                 : null;
+        }
+
+        /// <summary>
+        /// Get all <see cref="TechniqueCategory"/> entities, represented as a collection of
+        /// <see cref="TechniqueCategoryViewModel"/> DTOs.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ICollection<TechniqueCategoryViewModel>> GetAll()
+        {
+            var results = await _techniqueCategoryRepository.GetByConditionAsync(_ => true);
+
+            var models = _mapper.Map<ICollection<TechniqueCategoryViewModel>>(results);
+
+            return models;
         }
     }
 }

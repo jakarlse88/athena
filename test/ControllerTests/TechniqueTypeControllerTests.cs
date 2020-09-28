@@ -75,7 +75,7 @@ namespace Athena.Test.ControllerTests
             var result = await controller.Get("Incorrect name");
 
             // Assert
-            var actionResult = Assert.IsAssignableFrom<NotFoundResult>(result);
+            var actionResult = Assert.IsAssignableFrom<NotFoundObjectResult>(result);
 
             mockService
                 .Verify(x => x.GetByNameAsync(It.IsAny<string>()), Times.Once());

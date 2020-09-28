@@ -46,7 +46,7 @@ namespace Athena.Controllers
             var result = await _techniqueTypeService.GetByNameAsync(name);
 
             return result == null
-                ? (IActionResult) NotFound()
+                ? (IActionResult) NotFound($"Couldn't find any {nameof(TechniqueType)} entity matching the name '{name}'.")
                 : Ok(result);
         }
         

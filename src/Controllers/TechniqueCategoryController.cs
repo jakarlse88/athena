@@ -21,6 +21,22 @@ namespace Athena.Controllers
         }
 
         /// <summary>
+        /// Get all <see cref="TechniqueCategory"/> entities,
+        /// represented as <see cref="TechniqueCategoryViewModel"/> DTOs.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("all/")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get()
+        {
+            var models = await _techniqueCategoryService.GetAll();
+
+            return Ok(models);
+        }
+        
+        /// <summary>
         /// Gets a <see cref="TechniqueCategory"/> entity by its Name property.
         /// </summary>
         /// <param name="name"></param>
@@ -46,7 +62,7 @@ namespace Athena.Controllers
             var result = await _techniqueCategoryService.GetByNameAsync(name);
 
             return result == null
-                ? (IActionResult) NotFound()
+                ? (IActionResult) NotFound($"Couldn't find any {nameof(TechniqueCategory)} entity matching the name '{name}'.")
                 : Ok(result);
         }
 

@@ -50,7 +50,7 @@ namespace Athena.Controllers
             var result = await _techniqueService.GetByNameAsync(name);
 
             return result == null
-                ? (IActionResult) NotFound($"Couldn't find any technique matching the name <{name}>.")
+                ? (IActionResult) NotFound($"Couldn't find any {nameof(Technique)} entity matching the name '{name}'.")
                 : Ok(result);
         }
 

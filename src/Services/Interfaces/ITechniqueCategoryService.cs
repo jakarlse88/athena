@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Athena.Models.ViewModels;
 
 namespace Athena.Services
@@ -7,5 +8,6 @@ namespace Athena.Services
     {
         Task<TechniqueCategoryViewModel> CreateAsync(TechniqueCategoryViewModel model);
         Task<TechniqueCategoryViewModel> GetByNameAsync(string name);
+        Task<ICollection<TechniqueCategoryViewModel>> GetAll();
     }
 }

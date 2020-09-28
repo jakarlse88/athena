@@ -165,5 +165,48 @@ namespace Athena.Test.ServiceTests
             mockTechniqueCategoryRepository
                 .Verify(x => x.Insert(It.IsAny<TechniqueCategory>()), Times.Once());
         }
+        
+        /**
+         * GetAll()
+         */
+        [Fact]
+        public async Task TestGetAllNoResults()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueCategory>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()))
+                .ReturnsAsync(new List<TechniqueCategory>());
+
+            var service = new TechniqueCategoryService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetAll();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(result);
+        }
+
+        [Fact]
+        public async Task TestGetAll()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueCategory>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()))
+                .ReturnsAsync(new List<TechniqueCategory> { new TechniqueCategory(), new TechniqueCategory(), new TechniqueCategory() });
+
+            var service = new TechniqueCategoryService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetAll();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Count);
+            Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(result);
+        }
     }
 }
