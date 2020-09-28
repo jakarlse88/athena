@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Athena.Controllers;
 using Athena.Models.ViewModels;
 using Athena.Services;
@@ -122,6 +123,52 @@ namespace Athena.Test.ControllerTests
 
             mockService
                 .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueViewModel>()), Times.Once);
+        }
+
+        /**
+         * Get() 
+         */
+        [Fact]
+        public async Task TestGetNoResults()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueService>();
+            mockService
+                .Setup(x => x.GetAll())
+                .ReturnsAsync(new List<TechniqueViewModel>());
+
+            var controller = new TechniqueController(mockService.Object);
+
+            // Act
+            var response = await controller.Get();
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(modelResult);
+            Assert.Empty(modelResult);
+        }
+
+        [Fact]
+        public async Task TestGet()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueService>();
+            mockService
+                .Setup(x => x.GetAll())
+                .ReturnsAsync(new List<TechniqueViewModel>
+                    { new TechniqueViewModel(), new TechniqueViewModel(), new TechniqueViewModel() });
+
+            var controller = new TechniqueController(mockService.Object);
+
+            // Act
+            var response = await controller.Get();
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(modelResult);
+            Assert.Equal(3, modelResult.Count);
         }
     }
 }

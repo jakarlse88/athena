@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -80,6 +81,19 @@ namespace Athena.Services
                 : null;
         }
 
+        /// <summary>
+        /// Get all <see ctechref="Technique"/> entities.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ICollection<TechniqueViewModel>> GetAll()
+        {
+            var results = await _techniqueRepository.GetByConditionAsync(_ => true);
+
+            var models = _mapper.Map<ICollection<TechniqueViewModel>>(results);
+
+            return models;
+        }
+
         /**
          *
          * Private helper methods
@@ -112,7 +126,8 @@ namespace Athena.Services
         /// <summary>
         /// Gets a <see cref="TechniqueType"/> entity by its ID.
         /// </summary>
-        /// <returns></returns>y
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
         private async Task<TechniqueType> GetTechniqueType(string name)
         {
@@ -137,6 +152,7 @@ namespace Athena.Services
         /// Gets a <see cref="TechniqueCategory"/> entity by its ID.
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
         private async Task<TechniqueCategory> GetTechniqueCategory(string name)
         {
