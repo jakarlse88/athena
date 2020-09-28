@@ -166,5 +166,48 @@ namespace Athena.Test.ServiceTests
             mockTechniqueTypeRepository
                 .Verify(x => x.Insert(It.IsAny<TechniqueType>()), Times.Once());
         }
+        
+        /**
+         * GetAllAsync()
+         */
+        [Fact]
+        public async Task TestGetAllNoResults()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType>());
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetAllAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(result);
+        }
+
+        [Fact]
+        public async Task TestGetAll()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType> { new TechniqueType(), new TechniqueType(), new TechniqueType() });
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetAllAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Count);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(result);
+        }
     }
 }

@@ -81,7 +81,7 @@ namespace Athena.Services
         /// <see cref="TechniqueCategoryViewModel"/> DTOs.
         /// </summary>
         /// <returns></returns>
-        public async Task<ICollection<TechniqueCategoryViewModel>> GetAll()
+        public async Task<ICollection<TechniqueCategoryViewModel>> GetAllAsync()
         {
             var results = await _techniqueCategoryRepository.GetByConditionAsync(_ => true);
 

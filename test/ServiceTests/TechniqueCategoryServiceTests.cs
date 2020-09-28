@@ -181,7 +181,7 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueCategoryService(mockRepository.Object, _mapper);
 
             // Act
-            var result = await service.GetAll();
+            var result = await service.GetAllAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -201,7 +201,7 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueCategoryService(mockRepository.Object, _mapper);
 
             // Act
-            var result = await service.GetAll();
+            var result = await service.GetAllAsync();
 
             // Assert
             Assert.NotNull(result);

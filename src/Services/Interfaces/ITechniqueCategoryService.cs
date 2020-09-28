@@ -8,6 +8,6 @@ namespace Athena.Services
     {
         Task<TechniqueCategoryViewModel> CreateAsync(TechniqueCategoryViewModel model);
         Task<TechniqueCategoryViewModel> GetByNameAsync(string name);
-        Task<ICollection<TechniqueCategoryViewModel>> GetAll();
+        Task<ICollection<TechniqueCategoryViewModel>> GetAllAsync();
     }
 }

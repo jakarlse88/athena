@@ -64,7 +64,7 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
-            var models = await _techniqueService.GetAll();
+            var models = await _techniqueService.GetAllAsync();
 
             return Ok(models);
         }

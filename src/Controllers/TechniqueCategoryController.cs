@@ -31,7 +31,7 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
-            var models = await _techniqueCategoryService.GetAll();
+            var models = await _techniqueCategoryService.GetAllAsync();
 
             return Ok(models);
         }

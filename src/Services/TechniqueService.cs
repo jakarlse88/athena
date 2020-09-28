@@ -85,7 +85,7 @@ namespace Athena.Services
         /// Get all <see ctechref="Technique"/> entities.
         /// </summary>
         /// <returns></returns>
-        public async Task<ICollection<TechniqueViewModel>> GetAll()
+        public async Task<ICollection<TechniqueViewModel>> GetAllAsync()
         {
             var results = await _techniqueRepository.GetByConditionAsync(_ => true);
 

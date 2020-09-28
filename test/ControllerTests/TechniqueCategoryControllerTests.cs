@@ -134,7 +134,7 @@ namespace Athena.Test.ControllerTests
             // Arrange
             var mockService = new Mock<ITechniqueCategoryService>();
             mockService
-                .Setup(x => x.GetAll())
+                .Setup(x => x.GetAllAsync())
                 .ReturnsAsync(new List<TechniqueCategoryViewModel>());
 
             var controller = new TechniqueCategoryController(mockService.Object);
@@ -155,7 +155,7 @@ namespace Athena.Test.ControllerTests
             // Arrange
             var mockService = new Mock<ITechniqueCategoryService>();
             mockService
-                .Setup(x => x.GetAll())
+                .Setup(x => x.GetAllAsync())
                 .ReturnsAsync(new List<TechniqueCategoryViewModel>
                     { new TechniqueCategoryViewModel(), new TechniqueCategoryViewModel(), new TechniqueCategoryViewModel() });
 

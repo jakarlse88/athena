@@ -19,6 +19,22 @@ namespace Athena.Controllers
         {
             _techniqueTypeService = techniqueTypeService;
         }
+        
+        /// <summary>
+        /// Get all <see cref="TechniqueType"/> entities,
+        /// represented as <see cref="TechniqueTypeViewModel"/> DTOs.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("all/")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get()
+        {
+            var models = await _techniqueTypeService.GetAllAsync();
+
+            return Ok(models);
+        }
 
         /// <summary>
         /// Gets a <see cref="TechniqueType"/> entity by its Name property.

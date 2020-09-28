@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -48,6 +49,19 @@ namespace Athena.Services
             return techniqueType.Any() 
                 ? _mapper.Map<TechniqueTypeViewModel>(techniqueType.FirstOrDefault()) 
                 : null;
+        }
+
+        /// <summary>
+        /// Get all <see ctechref="TechniqueType"/> entities.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ICollection<TechniqueTypeViewModel>> GetAllAsync()
+        {
+            var results = await _techniqueTypeRepository.GetByConditionAsync(_ => true);
+
+            var models = _mapper.Map<ICollection<TechniqueTypeViewModel>>(results);
+
+            return models;
         }
 
         /// <summary>
