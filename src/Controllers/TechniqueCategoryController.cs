@@ -58,10 +58,10 @@ namespace Athena.Controllers
         /// <response code="400">Received a null value for <param name="model"></param>.</response>
         /// <response code="401">User not authorized.</response>
         [HttpPost]
+        [Authorize(Policy = "HasTechniqueCategoryPermissions")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [HttpPost]
         public async Task<IActionResult> Post(TechniqueCategoryViewModel model)
         {
             if (model == null)
