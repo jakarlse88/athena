@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Athena.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/technique/category")]
     public class TechniqueCategoryController : ControllerBase
     {
         private readonly ITechniqueCategoryService _techniqueCategoryService;
