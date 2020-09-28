@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace Athena.Infrastructure.Validators
 {
-    public class TechniqueTypeValidator : AbstractValidator<TechniqueTypeViewModel>
+    public class TechniqueCategoryValidator : AbstractValidator<TechniqueCategoryViewModel>
     {
-        public TechniqueTypeValidator()
+        public TechniqueCategoryValidator()
         {
             RuleFor(model => model.Name)
                 .NotEmpty()

@@ -1,8 +1,8 @@
 ﻿using Athena.Models.Entities;
-using Athena.ViewModels;
+using Athena.Models.ViewModels;
 using AutoMapper;
 
-namespace Athena.Infrastructure.MappingProfiles
+namespace Athena.Models.MappingProfiles
 {
     public class TechniqueMappingProfile : Profile
     {

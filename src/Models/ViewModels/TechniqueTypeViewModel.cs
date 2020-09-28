@@ -1,4 +1,4 @@
-﻿namespace Athena.ViewModels
+﻿namespace Athena.Models.ViewModels
 {
     public class TechniqueTypeViewModel
     {

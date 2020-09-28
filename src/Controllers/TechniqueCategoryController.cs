@@ -11,18 +11,18 @@ namespace Athena.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TechniqueTypeController : ControllerBase
+    public class TechniqueCategoryController : ControllerBase
     {
-        private readonly ITechniqueTypeService _techniqueTypeService;
+        private readonly ITechniqueCategoryService _techniqueCategoryService;
 
-        public TechniqueTypeController(ITechniqueTypeService techniqueTypeService)
+        public TechniqueCategoryController(ITechniqueCategoryService techniqueCategoryService)
         {
-            _techniqueTypeService = techniqueTypeService;
+            _techniqueCategoryService = techniqueCategoryService;
         }
-        
+
         /// <summary>
-        /// Get all <see cref="TechniqueType"/> entities,
-        /// represented as <see cref="TechniqueTypeViewModel"/> DTOs.
+        /// Get all <see cref="TechniqueCategory"/> entities,
+        /// represented as <see cref="TechniqueCategoryViewModel"/> DTOs.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -31,13 +31,13 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
-            var models = await _techniqueTypeService.GetAllAsync();
+            var models = await _techniqueCategoryService.GetAllAsync();
 
             return Ok(models);
         }
-
+        
         /// <summary>
-        /// Gets a <see cref="TechniqueType"/> entity by its Name property.
+        /// Gets a <see cref="TechniqueCategory"/> entity by its Name property.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -53,39 +53,39 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(string name)
         {
-            if (string.IsNullOrWhiteSpace(name) || 
+            if (string.IsNullOrWhiteSpace(name) ||
                 !new Regex(@"^[a-zA-Z ]*$").IsMatch(name)) // Alphabetical/whitespace only
             {
                 return BadRequest();
             }
 
-            var result = await _techniqueTypeService.GetByNameAsync(name);
+            var result = await _techniqueCategoryService.GetByNameAsync(name);
 
             return result == null
-                ? (IActionResult) NotFound($"Couldn't find any {nameof(TechniqueType)} entity matching the name '{name}'.")
+                ? (IActionResult) NotFound($"Couldn't find any {nameof(TechniqueCategory)} entity matching the name '{name}'.")
                 : Ok(result);
         }
-        
+
         /// <summary>
-        /// Creates a new <see cref="TechniqueType"/> entity.
+        /// Creates a new <see cref="TechniqueCategory"/> entity.
         /// </summary>
         /// <returns></returns>
         /// <response code="201">Entity was successfully created.</response>
         /// <response code="400">Received a null value for <param name="model"></param>.</response>
         /// <response code="401">User not authorized.</response>
         [HttpPost]
-        [Authorize(Policy = "HasTechniqueTypePermissions")]
+        [Authorize(Policy = "HasTechniqueCategoryPermissions")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Post(TechniqueTypeViewModel model)
+        public async Task<IActionResult> Post(TechniqueCategoryViewModel model)
         {
             if (model == null)
             {
                 return BadRequest();
             }
 
-            var result = await _techniqueTypeService.CreateAsync(model);
+            var result = await _techniqueCategoryService.CreateAsync(model);
 
             return CreatedAtAction("Get", new { name = result.Name }, result);
         }

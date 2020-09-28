@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Reflection;
 using Athena.Data;
@@ -27,6 +26,7 @@ namespace Athena.Infrastructure
         {
             services.AddTransient<ITechniqueService, TechniqueService>();
             services.AddTransient<ITechniqueTypeService, TechniqueTypeService>();
+            services.AddTransient<ITechniqueCategoryService, TechniqueCategoryService>();
 
             return services;
         }
@@ -92,6 +92,14 @@ namespace Athena.Infrastructure
                 options.AddPolicy("HasTechniquePermissions",
                     policy => policy.RequireClaim("permissions", "technique:read", "technique:write",
                         "technique:update", "technique:delete"));
+                
+                options.AddPolicy("HasTechniqueTypePermissions",
+                    policy => policy.RequireClaim("permissions", "techniquetype:read", "techniquetype:write",
+                        "techniquetype:update", "techniquetype:delete"));
+                
+                options.AddPolicy("HasTechniqueCategoryPermissions",
+                    policy => policy.RequireClaim("permissions", "techniquecategory:read", "techniquecategory:write",
+                        "techniquecategory:update", "techniquecategory:delete"));
             });
 
             return services;

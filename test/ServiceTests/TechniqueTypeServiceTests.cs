@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Athena.Infrastructure.MappingProfiles;
 using Athena.Models.Entities;
+using Athena.Models.MappingProfiles;
+using Athena.Models.ViewModels;
 using Athena.Repositories;
 using Athena.Services;
-using Athena.ViewModels;
 using AutoMapper;
 using Moq;
 using Xunit;
@@ -89,6 +89,23 @@ namespace Athena.Test.ServiceTests
                 .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()), Times.Once());
         }
 
+        [Fact]
+        public async Task TestGetByNameAsyncNameIllegalCharacters()
+        {
+            // Arrange
+            const string testString = "t3chn1que";
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task<TechniqueTypeViewModel> TestAction() => await service.GetByNameAsync(testString);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentException>(TestAction);
+            Assert.Equal("Argument contains one or more invalid characters. (Parameter 'name')", ex.Message);
+            Assert.Equal("name", ex.ParamName);
+        }
+
+        
         /**
          * Create
          */
@@ -148,6 +165,49 @@ namespace Athena.Test.ServiceTests
 
             mockTechniqueTypeRepository
                 .Verify(x => x.Insert(It.IsAny<TechniqueType>()), Times.Once());
+        }
+        
+        /**
+         * GetAllAsync()
+         */
+        [Fact]
+        public async Task TestGetAllNoResults()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType>());
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetAllAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(result);
+        }
+
+        [Fact]
+        public async Task TestGetAll()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType> { new TechniqueType(), new TechniqueType(), new TechniqueType() });
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            var result = await service.GetAllAsync();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Count);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(result);
         }
     }
 }

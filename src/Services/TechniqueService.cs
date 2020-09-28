@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
+using Athena.Models.ViewModels;
 using Athena.Repositories;
-using Athena.ViewModels;
 using AutoMapper;
 
 namespace Athena.Services
@@ -55,6 +57,7 @@ namespace Athena.Services
         /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// /// <exception cref="ArgumentException"><paramref name="name"/> argument contains one or more illegal characters.</exception>
         public async Task<TechniqueViewModel> GetByNameAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -62,13 +65,33 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(name));
             }
 
+            if (!new Regex(@"^[a-zA-Z ]*$").IsMatch(name))
+            {
+                throw new ArgumentException("Argument contains one or more invalid characters.", nameof(name));
+            }
+            
             var result =
                 await _techniqueRepository
                     .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
 
-            return result.Any() 
-                ? _mapper.Map<TechniqueViewModel>(result.FirstOrDefault()) 
+            var technique = result as Technique[] ?? result.ToArray();
+            
+            return technique.Any() 
+                ? _mapper.Map<TechniqueViewModel>(technique.FirstOrDefault()) 
                 : null;
+        }
+
+        /// <summary>
+        /// Get all <see ctechref="Technique"/> entities.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ICollection<TechniqueViewModel>> GetAllAsync()
+        {
+            var results = await _techniqueRepository.GetByConditionAsync(_ => true);
+
+            var models = _mapper.Map<ICollection<TechniqueViewModel>>(results);
+
+            return models;
         }
 
         /**
@@ -103,7 +126,8 @@ namespace Athena.Services
         /// <summary>
         /// Gets a <see cref="TechniqueType"/> entity by its ID.
         /// </summary>
-        /// <returns></returns>y
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
         private async Task<TechniqueType> GetTechniqueType(string name)
         {
@@ -128,6 +152,7 @@ namespace Athena.Services
         /// Gets a <see cref="TechniqueCategory"/> entity by its ID.
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
         private async Task<TechniqueCategory> GetTechniqueCategory(string name)
         {

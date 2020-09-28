@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Athena.Controllers;
+using Athena.Models.ViewModels;
 using Athena.Services;
-using Athena.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -75,7 +76,7 @@ namespace Athena.Test.ControllerTests
             var result = await controller.Get("Incorrect name");
 
             // Assert
-            var actionResult = Assert.IsAssignableFrom<NotFoundResult>(result);
+            var actionResult = Assert.IsAssignableFrom<NotFoundObjectResult>(result);
 
             mockService
                 .Verify(x => x.GetByNameAsync(It.IsAny<string>()), Times.Once());
@@ -122,6 +123,52 @@ namespace Athena.Test.ControllerTests
 
             mockService
                 .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()), Times.Once);
+        }
+        
+        /**
+         * Get() 
+         */
+        [Fact]
+        public async Task TestGetNoResults()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueTypeService>();
+            mockService
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<TechniqueTypeViewModel>());
+
+            var controller = new TechniqueTypeController(mockService.Object);
+
+            // Act
+            var response = await controller.Get();
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(modelResult);
+            Assert.Empty(modelResult);
+        }
+
+        [Fact]
+        public async Task TestGet()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueTypeService>();
+            mockService
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<TechniqueTypeViewModel>
+                    { new TechniqueTypeViewModel(), new TechniqueTypeViewModel(), new TechniqueTypeViewModel() });
+
+            var controller = new TechniqueTypeController(mockService.Object);
+
+            // Act
+            var response = await controller.Get();
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(modelResult);
+            Assert.Equal(3, modelResult.Count);
         }
     }
 }

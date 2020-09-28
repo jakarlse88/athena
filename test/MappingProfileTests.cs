@@ -1,5 +1,5 @@
 ﻿using Athena.Models.Entities;
-using Athena.ViewModels;
+using Athena.Models.ViewModels;
 using AutoMapper;
 using Xunit;
 

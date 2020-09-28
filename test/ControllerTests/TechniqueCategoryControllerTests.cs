@@ -9,9 +9,9 @@ using Xunit;
 
 namespace Athena.Test.ControllerTests
 {
-    public class TechniqueControllerTests
+    public class TechniqueCategoryControllerTests
     {
-        /**
+                /**
          * Get()
          */
         [Theory]
@@ -23,7 +23,7 @@ namespace Athena.Test.ControllerTests
         public async Task TestGetInvalidName(string testName)
         {
             // Arrange
-            var controller = new TechniqueController(null);
+            var controller = new TechniqueCategoryController(null);
 
             // Act
             var result = await controller.Get(testName);
@@ -38,20 +38,20 @@ namespace Athena.Test.ControllerTests
             // Arrange
             const string testName = "Test";
 
-            var mockService = new Mock<ITechniqueService>();
+            var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetByNameAsync(testName))
-                .ReturnsAsync(new TechniqueViewModel { Name = testName })
+                .ReturnsAsync(new TechniqueCategoryViewModel { Name = testName })
                 .Verifiable();
 
-            var controller = new TechniqueController(mockService.Object);
+            var controller = new TechniqueCategoryController(mockService.Object);
 
             // Act
             var result = await controller.Get(testName);
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(result);
-            var modelResult = Assert.IsAssignableFrom<TechniqueViewModel>(actionResult.Value);
+            var modelResult = Assert.IsAssignableFrom<TechniqueCategoryViewModel>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
 
             mockService
@@ -64,13 +64,13 @@ namespace Athena.Test.ControllerTests
             // Arrange
             const string testName = "Test";
 
-            var mockService = new Mock<ITechniqueService>();
+            var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetByNameAsync(testName))
-                .ReturnsAsync(new TechniqueViewModel())
+                .ReturnsAsync(new TechniqueCategoryViewModel())
                 .Verifiable();
 
-            var controller = new TechniqueController(mockService.Object);
+            var controller = new TechniqueCategoryController(mockService.Object);
 
             // Act
             var result = await controller.Get("Incorrect name");
@@ -89,7 +89,7 @@ namespace Athena.Test.ControllerTests
         public async Task TestPostModelNull()
         {
             // Arrange
-            var controller = new TechniqueController(null);
+            var controller = new TechniqueCategoryController(null);
 
             // Act
             var result = await controller.Post(null);
@@ -104,25 +104,25 @@ namespace Athena.Test.ControllerTests
             // Arrange
             var testName = "test";
 
-            var mockService = new Mock<ITechniqueService>();
+            var mockService = new Mock<ITechniqueCategoryService>();
             mockService
-                .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueViewModel>()))
-                .ReturnsAsync(new TechniqueViewModel { Name = testName })
+                .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueCategoryViewModel>()))
+                .ReturnsAsync(new TechniqueCategoryViewModel { Name = testName })
                 .Verifiable();
 
-            var controller = new TechniqueController(mockService.Object);
+            var controller = new TechniqueCategoryController(mockService.Object);
 
             // Act
-            var result = await controller.Post(new TechniqueViewModel());
+            var result = await controller.Post(new TechniqueCategoryViewModel());
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<CreatedAtActionResult>(result);
             Assert.Equal("Get", actionResult.ActionName);
-            var modelResult = Assert.IsAssignableFrom<TechniqueViewModel>(actionResult.Value);
+            var modelResult = Assert.IsAssignableFrom<TechniqueCategoryViewModel>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
 
             mockService
-                .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueViewModel>()), Times.Once);
+                .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueCategoryViewModel>()), Times.Once);
         }
 
         /**
@@ -132,20 +132,20 @@ namespace Athena.Test.ControllerTests
         public async Task TestGetNoResults()
         {
             // Arrange
-            var mockService = new Mock<ITechniqueService>();
+            var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<TechniqueViewModel>());
+                .ReturnsAsync(new List<TechniqueCategoryViewModel>());
 
-            var controller = new TechniqueController(mockService.Object);
+            var controller = new TechniqueCategoryController(mockService.Object);
 
             // Act
             var response = await controller.Get();
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
-            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(actionResult.Value);
-            Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(modelResult);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(modelResult);
             Assert.Empty(modelResult);
         }
 
@@ -153,21 +153,21 @@ namespace Athena.Test.ControllerTests
         public async Task TestGet()
         {
             // Arrange
-            var mockService = new Mock<ITechniqueService>();
+            var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<TechniqueViewModel>
-                    { new TechniqueViewModel(), new TechniqueViewModel(), new TechniqueViewModel() });
+                .ReturnsAsync(new List<TechniqueCategoryViewModel>
+                    { new TechniqueCategoryViewModel(), new TechniqueCategoryViewModel(), new TechniqueCategoryViewModel() });
 
-            var controller = new TechniqueController(mockService.Object);
+            var controller = new TechniqueCategoryController(mockService.Object);
 
             // Act
             var response = await controller.Get();
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
-            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(actionResult.Value);
-            Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(modelResult);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(modelResult);
             Assert.Equal(3, modelResult.Count);
         }
     }
