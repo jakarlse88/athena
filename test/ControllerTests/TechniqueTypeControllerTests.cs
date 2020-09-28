@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Athena.Controllers;
+using Athena.Models.ViewModels;
 using Athena.Services;
-using Athena.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -13,7 +14,6 @@ namespace Athena.Test.ControllerTests
         /**
          * Get()
          */
-        
         [Theory]
         [InlineData(null)]
         [InlineData(" ")]
@@ -76,22 +76,21 @@ namespace Athena.Test.ControllerTests
             var result = await controller.Get("Incorrect name");
 
             // Assert
-            var actionResult = Assert.IsAssignableFrom<NotFoundResult>(result);
+            var actionResult = Assert.IsAssignableFrom<NotFoundObjectResult>(result);
 
             mockService
                 .Verify(x => x.GetByNameAsync(It.IsAny<string>()), Times.Once());
         }
-        
+
         /**
          * Post()
          */
-        
         [Fact]
         public async Task TestPostModelNull()
         {
             // Arrange
             var controller = new TechniqueTypeController(null);
-            
+
             // Act
             var result = await controller.Post(null);
 
@@ -104,15 +103,15 @@ namespace Athena.Test.ControllerTests
         {
             // Arrange
             const string testName = "test";
-            
+
             var mockService = new Mock<ITechniqueTypeService>();
             mockService
                 .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()))
                 .ReturnsAsync(new TechniqueTypeViewModel { Name = testName })
                 .Verifiable();
-            
+
             var controller = new TechniqueTypeController(mockService.Object);
-            
+
             // Act
             var result = await controller.Post(new TechniqueTypeViewModel());
 
@@ -121,9 +120,55 @@ namespace Athena.Test.ControllerTests
             Assert.Equal("Get", actionResult.ActionName);
             var modelResult = Assert.IsAssignableFrom<TechniqueTypeViewModel>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
-            
+
             mockService
                 .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()), Times.Once);
+        }
+        
+        /**
+         * Get() 
+         */
+        [Fact]
+        public async Task TestGetNoResults()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueTypeService>();
+            mockService
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<TechniqueTypeViewModel>());
+
+            var controller = new TechniqueTypeController(mockService.Object);
+
+            // Act
+            var response = await controller.Get();
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(modelResult);
+            Assert.Empty(modelResult);
+        }
+
+        [Fact]
+        public async Task TestGet()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueTypeService>();
+            mockService
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<TechniqueTypeViewModel>
+                    { new TechniqueTypeViewModel(), new TechniqueTypeViewModel(), new TechniqueTypeViewModel() });
+
+            var controller = new TechniqueTypeController(mockService.Object);
+
+            // Act
+            var response = await controller.Get();
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(modelResult);
+            Assert.Equal(3, modelResult.Count);
         }
     }
 }

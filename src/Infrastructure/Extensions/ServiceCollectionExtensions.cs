@@ -6,9 +6,11 @@ using Athena.Infrastructure.Config;
 using Athena.Repositories;
 using Athena.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Athena.Infrastructure
@@ -24,10 +26,11 @@ namespace Athena.Infrastructure
         {
             services.AddTransient<ITechniqueService, TechniqueService>();
             services.AddTransient<ITechniqueTypeService, TechniqueTypeService>();
+            services.AddTransient<ITechniqueCategoryService, TechniqueCategoryService>();
 
             return services;
         }
-        
+
         /// <summary>
         /// Adds repository layer services to the application dependency injection container. 
         /// </summary>
@@ -39,7 +42,7 @@ namespace Athena.Infrastructure
 
             return services;
         }
-        
+
         /// <summary>
         /// Configures OIDC authentication with Auth0.
         /// </summary>
@@ -49,16 +52,54 @@ namespace Athena.Infrastructure
         internal static IServiceCollection ConfigureAuthentication(this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                var authConfig = configuration.GetSection(Auth0Options.Auth0).Get<Auth0Options>();
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-                options.Authority = authConfig.Authority;
-                options.Audience = authConfig.ApiIdentifier;
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    var authConfig = configuration.GetSection(Auth0Options.Auth0).Get<Auth0Options>();
+
+                    options.Authority = authConfig.Authority;
+                    options.Audience = authConfig.ApiIdentifier;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        RoleClaimType = "https://schemas.jakarlse.com/roles"
+                    };
+                });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Configures policy-based authorization.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        internal static IServiceCollection ConfigureAuthorization(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                options.AddPolicy("HasTechniquePermissions",
+                    policy => policy.RequireClaim("permissions", "technique:read", "technique:write",
+                        "technique:update", "technique:delete"));
+                
+                options.AddPolicy("HasTechniqueTypePermissions",
+                    policy => policy.RequireClaim("permissions", "techniquetype:read", "techniquetype:write",
+                        "techniquetype:update", "techniquetype:delete"));
+                
+                options.AddPolicy("HasTechniqueCategoryPermissions",
+                    policy => policy.RequireClaim("permissions", "techniquecategory:read", "techniquecategory:write",
+                        "techniquecategory:update", "techniquecategory:delete"));
             });
 
             return services;
@@ -88,20 +129,24 @@ namespace Athena.Infrastructure
         {
             services.AddCors(options => options.AddDefaultPolicy(builder =>
             {
-                // Testing with locally run client
-                builder
-                    .WithOrigins("https://localhost:5001")
+                builder // Testing with Hecate ,run locally
+                    .WithOrigins("http://localhost:5001")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
-                
+
+                builder // Testing with Peitho, run locally
+                    .WithOrigins("http://localhost:5000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+
                 // The real question is, what to do re: CORS when the application/services are deployed with Kubernetes?
-                
             }));
 
             return services;
         }
-        
+
         /// <summary>
         /// Configures Swagger.
         /// </summary>
