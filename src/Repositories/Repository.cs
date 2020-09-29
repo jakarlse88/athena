@@ -9,7 +9,8 @@ using Serilog;
 
 namespace Athena.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, new ()
+    public class Repository<TEntity> : IRepository<TEntity> 
+        where TEntity : class, new ()
     {
         private readonly AthenaDbContext _context;
 
@@ -46,11 +47,37 @@ namespace Athena.Repositories
         }
 
         /// <summary>
+        /// Begin tracking any changes made to a <typeparam name="TEntity"></typeparam>
+        /// entity in the 'Updated' state.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task UpdateAsync(TEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            try
+            {
+                _context.Set<TEntity>().Update(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"An error occurred while attempting to update a {typeof(TEntity)} entity: {@e}");
+                throw;
+            }
+            
+        }
+
+        /// <summary>
         /// Gets the subset of all TEntity entities that satisfy a given condition.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        /// <exception cref="NullReferenceException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
         public async Task<IEnumerable<TEntity>> GetByConditionAsync(Expression<Func<TEntity, bool>> predicate)
         {
             if (predicate == null)

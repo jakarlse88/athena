@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Athena.Infrastructure.Exceptions;
 using Athena.Models.Entities;
 using Athena.Models.ViewModels;
 using Athena.Repositories;
 using AutoMapper;
+// ReSharper disable SpecifyStringComparison
 
 namespace Athena.Services
 {
@@ -94,11 +96,61 @@ namespace Athena.Services
             return models;
         }
 
+        /// <summary>
+        /// Update a <see cref="Technique"/> entity.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="model">Model containing updated properties.</param>
+        /// /// <exception cref="ArgumentNullException"></exception>
+        public async Task UpdateAsync(string entityName, TechniqueViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentNullException(nameof(entityName));
+            }
+            
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            var entity =
+                await GetTechniqueAsync(entityName);
+
+            await MapExistingEntity(entity, model);
+            await _techniqueRepository.UpdateAsync(entity);
+        }
+
         /**
          *
          * Private helper methods
          * 
          */
+        
+        /// <summary>
+        /// Maps a given <see cref="TechniqueViewModel"/> model to a new <seealso cref="Technique"/> entity.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exception"></exception>
+        private async Task<Technique> GetTechniqueAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            
+            var entity =
+                await _techniqueRepository.GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
+
+            if (entity == null)
+            {
+                throw new EntityNotFoundException("Couldn't find an entity matching the specified name", nameof(Technique), name);
+            }
+
+            return entity.FirstOrDefault();
+        }
+        
         /// <summary>
         /// Maps a given <see cref="TechniqueViewModel"/> model to a new <seealso cref="Technique"/> entity.
         /// </summary>
@@ -124,6 +176,30 @@ namespace Athena.Services
         }
 
         /// <summary>
+        /// Map the properties of a <see cref="TechniqueViewModel"/> model onto an existing
+        /// <see cref="Technique"/> entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="model"></param>
+        private async Task MapExistingEntity(Technique entity, TechniqueViewModel model)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            
+            entity.TechniqueCategoryNameNavigation = await GetTechniqueCategory(model.TechniqueCategoryName);
+            entity.TechniqueTypeNameNavigation = await GetTechniqueType(model.TechniqueTypeName);
+            entity.NameHangeul = model.NameHangeul;
+            entity.NameHanja = model.NameHanja;
+        }
+
+        /// <summary>
         /// Gets a <see cref="TechniqueType"/> entity by its ID.
         /// </summary>
         /// <returns></returns>
@@ -136,16 +212,18 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var techniqueType =
+            var result =
                 await _techniqueTypeRepository.GetByConditionAsync(x => x.Name.ToLower() == name.ToLower());
 
-            if (!techniqueType.Any())
+            var techniqueType = result.FirstOrDefault();
+            
+            if (techniqueType == null)
             {
                 throw new Exception(
                     $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueType)} entity with the Name <{name}>.");
             }
 
-            return techniqueType.FirstOrDefault();
+            return techniqueType;
         }
 
         /// <summary>
@@ -161,16 +239,18 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var techniqueCategory =
+            var result =
                 await _techniqueCategoryRepository.GetByConditionAsync(x => x.Name.ToLower() == name.ToLower());
 
-            if (!techniqueCategory.Any())
+            var techniqueCategory = result.FirstOrDefault();
+            
+            if (techniqueCategory == null)
             {
                 throw new Exception(
                     $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueCategory)} entity with the Name <{name}>.");
             }
 
-            return techniqueCategory.FirstOrDefault();
+            return techniqueCategory;
         }
     }
 }

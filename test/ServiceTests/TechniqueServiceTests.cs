@@ -320,5 +320,36 @@ namespace Athena.Test.ServiceTests
             Assert.Equal(3, result.Count);
             Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(result);
         }
+
+        /**
+         * UpdateAsync()
+         */
+        [Fact]
+        public async Task TestUpdateAsyncEntityNull()
+        {
+            // Arrange
+            var service = new TechniqueService(null, null, null, null);
+
+            // Act
+            async Task TestAction() => await service.UpdateAsync(null, null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            Assert.Equal("entityName", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestUpdateAsyncModelNull()
+        {
+            // Arrange
+            var service = new TechniqueService(null, null, null, null);
+
+            // Act
+            async Task TestAction() => await service.UpdateAsync("test", null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            Assert.Equal("model", ex.ParamName);
+        }
     }
 }
