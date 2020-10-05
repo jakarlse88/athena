@@ -2,27 +2,17 @@
 using Athena.Models.ViewModels;
 using FluentValidation;
 
-namespace Athena.Infrastructure.Validators
+namespace Athena.Models.Validators
 {
-    public class TechniqueValidator : AbstractValidator<TechniqueViewModel>
+    public class TechniqueTypeValidator : AbstractValidator<TechniqueTypeViewModel>
     {
-        public TechniqueValidator()
+        public TechniqueTypeValidator()
         {
-            RuleFor(model => model.TechniqueCategoryName)
-                .NotEmpty()
-                .MaximumLength(50)
-                .Matches(new Regex(@"^[a-zA-Z ]*$"));
-
-            RuleFor(model => model.TechniqueTypeName)
-                .NotEmpty()
-                .MaximumLength(50)
-                .Matches(new Regex(@"^[a-zA-Z ]*$"));
-
             RuleFor(model => model.Name)
                 .NotEmpty()
                 .MaximumLength(50)
                 .Matches(new Regex(@"^[a-zA-Z ]*$"));
-
+            
             When(model => !string.IsNullOrWhiteSpace(model.NameHangeul), () =>
             {
                 RuleFor(model => model.NameHangeul)
@@ -39,4 +29,3 @@ namespace Athena.Infrastructure.Validators
         }
     }
 }
-

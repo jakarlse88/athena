@@ -10,6 +10,8 @@ namespace Athena.Models.Entities
         }
 
         public string Name { get; set; }
+        public string NameHangeul { get; set; }
+        public string NameHanja { get; set; }
 
         public virtual ICollection<Transition> Transition { get; set; }
     }
