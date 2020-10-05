@@ -146,6 +146,18 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+                
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_RelativeDirection_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_RelativeDirection_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
             });
 
             modelBuilder.Entity<RotationCategory>(entity =>
@@ -153,6 +165,18 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+                
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_RotationCategory_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_RotationCategory_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Stance>(entity =>
@@ -203,6 +227,18 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+                
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_StanceCategory_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_StanceCategory_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
             });
 
             modelBuilder.Entity<StanceType>(entity =>
@@ -210,6 +246,18 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+                
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_StanceType_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_StanceType_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Technique>(entity =>
@@ -261,6 +309,18 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_TechniqueCategory_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_TechniqueCategory_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
             });
 
             modelBuilder.Entity<TechniqueType>(entity =>
@@ -268,11 +328,24 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.HasIndex(e => e.NameHangeul)
+                    .HasName("UK_TechniqueType_NameHangeul")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NameHanja)
+                    .HasName("UK_TechniqueType_NameHanja")
+                    .IsUnique();
+
+                entity.Property(e => e.NameHanja).HasMaxLength(50);
+
+                entity.Property(e => e.NameHangeul).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Transition>(entity =>
             {
-                entity.HasIndex(e => new { e.RelativeDirectionName, e.RotationCategoryName, e.StanceName, e.TechniqueName })
+                entity.HasIndex(e => new
+                        { e.RelativeDirectionName, e.RotationCategoryName, e.StanceName, e.TechniqueName })
                     .HasName("UK_Transition")
                     .IsUnique();
 
