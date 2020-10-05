@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Athena.Models.Entities;
 using Athena.Models.ViewModels;
 
 namespace Athena.Services

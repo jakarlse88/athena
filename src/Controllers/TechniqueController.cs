@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Athena.Models.Entities;
 using Athena.Models.ViewModels;
 using Athena.Services;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
