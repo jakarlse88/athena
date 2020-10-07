@@ -1,4 +1,5 @@
-﻿using Athena.Models.ViewModels;
+﻿using System.Text.RegularExpressions;
+using Athena.Models.ViewModels;
 using FluentValidation;
 
 namespace Athena.Models.Validators
@@ -10,30 +11,30 @@ namespace Athena.Models.Validators
             RuleFor(model => model.TechniqueCategoryName)
                 .NotEmpty()
                 .MaximumLength(50)
-                .Matches(ValidationRegex.ValidAlphabetic);
+                .Matches(new Regex(ValidationRegex.ValidAlphabetic));
 
             RuleFor(model => model.TechniqueTypeName)
                 .NotEmpty()
                 .MaximumLength(50)
-                .Matches(ValidationRegex.ValidAlphabetic);
+                .Matches(new Regex(ValidationRegex.ValidAlphabetic));
 
-            RuleFor(model => model.Name)
+           RuleFor(model => model.Name)
                 .NotEmpty()
                 .MaximumLength(50)
-                .Matches(ValidationRegex.ValidAlphabetic);
+                .Matches(new Regex(ValidationRegex.ValidAlphabetic));
 
             When(model => !string.IsNullOrWhiteSpace(model.NameHangeul), () =>
             {
                 RuleFor(model => model.NameHangeul)
                     .MaximumLength(50)
-                    .Matches(ValidationRegex.ValidHangeul);
+                    .Matches(new Regex(ValidationRegex.ValidHangeul));
             });
 
             When(model => !string.IsNullOrWhiteSpace(model.NameHanja), () =>
             {
                 RuleFor(model => model.NameHanja)
                     .MaximumLength(50)
-                    .Matches(ValidationRegex.ValidHanja);    
+                    .Matches(new Regex(ValidationRegex.ValidHanja));
             });
         }
     }

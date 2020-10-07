@@ -123,7 +123,7 @@ namespace Athena.Controllers
                 await _techniqueService.UpdateAsync(model.Name, model);
                 return NoContent();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return NotFound($"Couldn't find a {nameof(Technique)} entity matching the name '{model.Name}'.");
             }
