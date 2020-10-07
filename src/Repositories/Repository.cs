@@ -47,8 +47,7 @@ namespace Athena.Repositories
         }
 
         /// <summary>
-        /// Begin tracking any changes made to a <typeparam name="TEntity"></typeparam>
-        /// entity in the 'Updated' state.
+        /// Begin tracking any changes made to an entity in the 'Updated' state.
         /// </summary>
         /// <param name="entity"></param>
         /// <exception cref="ArgumentNullException"></exception>
