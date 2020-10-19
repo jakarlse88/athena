@@ -8,7 +8,7 @@ WORKDIR /src
 COPY src/Athena.csproj Athena/
 RUN dotnet restore "Athena/Athena.csproj"
 WORKDIR /src/Athena
-COPY . .
+COPY src/. .
 RUN dotnet build "Athena.csproj" -c Release -o /app/build
 
 FROM build AS publish
