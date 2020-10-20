@@ -44,11 +44,11 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_Form_NameHangeul")
+                    .HasDatabaseName("UK_Form_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_Form_NameHanja")
+                    .HasDatabaseName("UK_Form_NameHanja")
                     .IsUnique();
 
                 entity.Property(e => e.Name).HasMaxLength(50);
@@ -73,11 +73,11 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_FormFamily_NameHangeul")
+                    .HasDatabaseName("UK_FormFamily_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_FormFamily_NameHanja")
+                    .HasDatabaseName("UK_FormFamily_NameHanja")
                     .IsUnique();
 
                 entity.Property(e => e.Name).HasMaxLength(50);
@@ -90,7 +90,7 @@ namespace Athena.Data
             modelBuilder.Entity<Movement>(entity =>
             {
                 entity.HasIndex(e => new { e.StanceName, e.TechniqueName, e.TransitionId })
-                    .HasName("UK_Movement")
+                    .HasDatabaseName("UK_Movement")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -148,11 +148,12 @@ namespace Athena.Data
                 entity.Property(e => e.Name).HasMaxLength(50);
                 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_RelativeDirection_NameHangeul")
+
+                    .HasDatabaseName("UK_RelativeDirection_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_RelativeDirection_NameHanja")
+                    .HasDatabaseName("UK_RelativeDirection_NameHanja")
                     .IsUnique();
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
@@ -167,11 +168,12 @@ namespace Athena.Data
                 entity.Property(e => e.Name).HasMaxLength(50);
                 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_RotationCategory_NameHangeul")
+                    .HasDatabaseName("UK_RotationCategory_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_RotationCategory_NameHanja")
+                    .HasDatabaseName("UK_RotationCategory_NameHanja")
+
                     .IsUnique();
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
@@ -184,15 +186,15 @@ namespace Athena.Data
                 entity.HasKey(e => e.Name);
 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_Stance_NameHangeul")
+                    .HasDatabaseName("UK_Stance_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_Stance_NameHanja")
+                    .HasDatabaseName("UK_Stance_NameHanja")
                     .IsUnique();
 
                 entity.HasIndex(e => new { e.Name, e.StanceCategoryName, e.StanceTypeName })
-                    .HasName("UK_Stance")
+                    .HasDatabaseName("UK_Stance")
                     .IsUnique();
 
                 entity.Property(e => e.Name).HasMaxLength(50);
@@ -229,11 +231,11 @@ namespace Athena.Data
                 entity.Property(e => e.Name).HasMaxLength(50);
                 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_StanceCategory_NameHangeul")
+                    .HasDatabaseName("UK_StanceCategory_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_StanceCategory_NameHanja")
+                    .HasDatabaseName("UK_StanceCategory_NameHanja")
                     .IsUnique();
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
@@ -248,11 +250,11 @@ namespace Athena.Data
                 entity.Property(e => e.Name).HasMaxLength(50);
                 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_StanceType_NameHangeul")
+                    .HasDatabaseName("UK_StanceType_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_StanceType_NameHanja")
+                    .HasDatabaseName("UK_StanceType_NameHanja")
                     .IsUnique();
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
@@ -266,15 +268,15 @@ namespace Athena.Data
                     .HasName("PK_Technique_1");
 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_Technique_NameHangeul")
+                    .HasDatabaseName("UK_Technique_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_Technique_NameHanja")
+                    .HasDatabaseName("UK_Technique_NameHanja")
                     .IsUnique();
 
                 entity.HasIndex(e => new { e.Name, e.TechniqueCategoryName, e.TechniqueTypeName })
-                    .HasName("UK_Technique")
+                    .HasDatabaseName("UK_Technique")
                     .IsUnique();
 
                 entity.Property(e => e.Name).HasMaxLength(50);
@@ -311,11 +313,11 @@ namespace Athena.Data
                 entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_TechniqueCategory_NameHangeul")
+                    .HasDatabaseName("UK_TechniqueCategory_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_TechniqueCategory_NameHanja")
+                    .HasDatabaseName("UK_TechniqueCategory_NameHanja")
                     .IsUnique();
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
@@ -330,11 +332,11 @@ namespace Athena.Data
                 entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.HasIndex(e => e.NameHangeul)
-                    .HasName("UK_TechniqueType_NameHangeul")
+                    .HasDatabaseName("UK_TechniqueType_NameHangeul")
                     .IsUnique();
 
                 entity.HasIndex(e => e.NameHanja)
-                    .HasName("UK_TechniqueType_NameHanja")
+                    .HasDatabaseName("UK_TechniqueType_NameHanja")
                     .IsUnique();
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
@@ -346,7 +348,7 @@ namespace Athena.Data
             {
                 entity.HasIndex(e => new
                         { e.RelativeDirectionName, e.RotationCategoryName, e.StanceName, e.TechniqueName })
-                    .HasName("UK_Transition")
+                    .HasDatabaseName("UK_Transition")
                     .IsUnique();
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
