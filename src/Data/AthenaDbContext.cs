@@ -148,6 +148,7 @@ namespace Athena.Data
                 entity.Property(e => e.Name).HasMaxLength(50);
                 
                 entity.HasIndex(e => e.NameHangeul)
+
                     .HasDatabaseName("UK_RelativeDirection_NameHangeul")
                     .IsUnique();
 
@@ -172,6 +173,7 @@ namespace Athena.Data
 
                 entity.HasIndex(e => e.NameHanja)
                     .HasDatabaseName("UK_RotationCategory_NameHanja")
+
                     .IsUnique();
 
                 entity.Property(e => e.NameHanja).HasMaxLength(50);
