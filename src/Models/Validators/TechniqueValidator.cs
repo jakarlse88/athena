@@ -2,7 +2,7 @@
 using Athena.Models.ViewModels;
 using FluentValidation;
 
-namespace Athena.Infrastructure.Validators
+namespace Athena.Models.Validators
 {
     public class TechniqueValidator : AbstractValidator<TechniqueViewModel>
     {
@@ -11,30 +11,30 @@ namespace Athena.Infrastructure.Validators
             RuleFor(model => model.TechniqueCategoryName)
                 .NotEmpty()
                 .MaximumLength(50)
-                .Matches(new Regex(@"^[a-zA-Z ]*$"));
+                .Matches(new Regex(ValidationRegex.ValidAlphabetic));
 
             RuleFor(model => model.TechniqueTypeName)
                 .NotEmpty()
                 .MaximumLength(50)
-                .Matches(new Regex(@"^[a-zA-Z ]*$"));
+                .Matches(new Regex(ValidationRegex.ValidAlphabetic));
 
-            RuleFor(model => model.Name)
+           RuleFor(model => model.Name)
                 .NotEmpty()
                 .MaximumLength(50)
-                .Matches(new Regex(@"^[a-zA-Z ]*$"));
+                .Matches(new Regex(ValidationRegex.ValidAlphabetic));
 
             When(model => !string.IsNullOrWhiteSpace(model.NameHangeul), () =>
             {
                 RuleFor(model => model.NameHangeul)
                     .MaximumLength(50)
-                    .Matches(new Regex(@"^[\p{IsHangulSyllables} ]*$"));
+                    .Matches(new Regex(ValidationRegex.ValidHangeul));
             });
 
             When(model => !string.IsNullOrWhiteSpace(model.NameHanja), () =>
             {
                 RuleFor(model => model.NameHanja)
                     .MaximumLength(50)
-                    .Matches(new Regex(@"^[\p{IsCJKUnifiedIdeographs} ]*$"));    
+                    .Matches(new Regex(ValidationRegex.ValidHanja));
             });
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
 using Athena.Models.ViewModels;
@@ -28,9 +29,9 @@ namespace Athena.Controllers
         /// <returns></returns>
         /// <response code="200">Entity was found.</response>
         /// <response code="400">Bad Name.</response>
-        /// <response code="401">User is not authorized.</response>
-        /// <response code="401">User does not hold sufficient permissions to access this resource.</response>
-        /// <response code="404">Entity was not found.</response>
+        /// <response code="401">User is not authorized to access this resource.</response>
+        /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
+        /// <response code="404">No entity was found matching the given identifier.</response>
         [HttpGet]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -74,8 +75,8 @@ namespace Athena.Controllers
         /// <returns></returns>
         /// <response code="201">Entity was successfully created.</response>
         /// <response code="400">Received a null value for <param name="model"></param>.</response>
-        /// <response code="401">User is not authorized.</response>
-        /// <response code="401">User does not hold sufficient permissions to access this resource.</response>
+        /// <response code="401">User is not authorized to access this resource.</response>
+        /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
         [HttpPost]
         [Authorize(Policy = "HasTechniquePermissions")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -92,6 +93,40 @@ namespace Athena.Controllers
             var result = await _techniqueService.CreateAsync(model);
 
             return CreatedAtAction("Get", new { name = result.Name }, result);
+        }
+
+        /// <summary>
+        /// Update an existing <see cref="Technique"/> entity.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <response code="204">Entity was successfully updated.</response>
+        /// <response code="401">User is not authorized to access this resource.</response>
+        /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
+        /// <response code="404">No entity was found matching the given identifier.</response>
+        [HttpPut]
+        [Authorize(Policy = "HasTechniquePermissions")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Put(TechniqueViewModel model)
+        {
+            if (model == null || string.IsNullOrWhiteSpace(model.Name))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _techniqueService.UpdateAsync(model.Name, model);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return NotFound($"Couldn't find a {nameof(Technique)} entity matching the name '{model.Name}'.");
+            }
         }
     }
 }

@@ -38,7 +38,6 @@ namespace Athena.Test.RepositoryTests
         /**
          * GetByCondition
          */
-        
         [Fact]
         public async Task TestGetByCondition()
         {
@@ -72,16 +71,16 @@ namespace Athena.Test.RepositoryTests
         {
             // Arrange
             var repository = new Repository<Technique>(null);
-            
+
             // Act
-            async Task<IEnumerable<Technique>> TestAction() => 
+            async Task<IEnumerable<Technique>> TestAction() =>
                 await repository.GetByConditionAsync(null);
 
             // Assert
             var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
             Assert.Equal("predicate", ex.ParamName);
         }
-        
+
         /**
          * Insert()
          */
@@ -108,9 +107,9 @@ namespace Athena.Test.RepositoryTests
                 .Verifiable();
 
             var repository = new Repository<Technique>(mockContext.Object);
-            
+
             var entity = new Technique();
-            
+
             // Act
             repository.Insert(entity);
 
@@ -129,17 +128,75 @@ namespace Athena.Test.RepositoryTests
                 .Verifiable();
 
             var repository = new Repository<Technique>(mockContext.Object);
-            
+
             var entity = new Technique();
-            
+
             // Act
             async Task<Technique> TestAction() => await repository.Insert(entity);
 
             // Assert
             var ex = await Assert.ThrowsAsync<Exception>(TestAction);
-            
+
             mockContext
                 .Verify(x => x.Add(It.IsAny<Technique>()), Times.Once);
+        }
+
+        /**
+         * Update()
+         */
+        [Fact]
+        public async Task TestUpdateEntityNull()
+        {
+            // Arrange
+            var repository = new Repository<Technique>(null);
+
+            // Act
+            async Task TestAction() => await repository.UpdateAsync(null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            Assert.Equal("entity", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestUpdate()
+        {
+            // Arrange
+            var mockContext = new Mock<AthenaDbContext>();
+            mockContext
+                .Setup(x => x.Set<Technique>().Update(It.IsAny<Technique>()))
+                .Verifiable();
+
+            var repository = new Repository<Technique>(mockContext.Object);
+            
+            // Act
+            await repository.UpdateAsync(new Technique());
+
+            // Assert
+            mockContext
+                .Verify(x => x.Set<Technique>().Update(It.IsAny<Technique>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestUpdateAsyncThrows()
+        {
+            var mockContext = new Mock<AthenaDbContext>();
+            mockContext
+                .Setup(x => x.Set<Technique>().Update(It.IsAny<Technique>()))
+                .Throws<Exception>();
+
+            var repository = new Repository<Technique>(mockContext.Object);
+
+            var entity = new Technique();
+
+            // Act
+            async Task TestAction() => await repository.UpdateAsync(entity);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<Exception>(TestAction);
+
+            mockContext
+                .Verify(x => x.Set<Technique>().Update(It.IsAny<Technique>()), Times.Once);
         }
 
         /**
@@ -151,7 +208,7 @@ namespace Athena.Test.RepositoryTests
 
             context.SaveChanges();
         }
-        
+
         private static DbContextOptions<AthenaDbContext> GenerateInMemoryDbContextOptions()
         {
             var options = new DbContextOptionsBuilder<AthenaDbContext>()

@@ -1,14 +1,14 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0.0-rc.2-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0.100-rc.2-buster-slim AS build
 WORKDIR /src
 COPY src/Athena.csproj Athena/
 RUN dotnet restore "Athena/Athena.csproj"
 WORKDIR /src/Athena
-COPY . .
+COPY src/. .
 RUN dotnet build "Athena.csproj" -c Release -o /app/build
 
 FROM build AS publish

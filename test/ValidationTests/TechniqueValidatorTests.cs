@@ -1,4 +1,4 @@
-﻿using Athena.Infrastructure.Validators;
+﻿using Athena.Models.Validators;
 using FluentValidation.TestHelper;
 using Xunit;
 
