@@ -135,8 +135,14 @@ namespace Athena.Infrastructure
                     .AllowAnyMethod()
                     .AllowCredentials();
 
-                builder // Testing with Peitho, run locally
+                builder // Testing with Peitho (Blazor WASM), run locally
                     .WithOrigins("http://localhost:5000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+
+                builder // Testing with Peitho (Angular), run locally
+                    .WithOrigins("http://localhost:4200")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
