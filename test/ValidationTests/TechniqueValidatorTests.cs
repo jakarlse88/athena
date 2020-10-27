@@ -25,9 +25,11 @@ namespace Athena.Test.ValidationTests
         public void TestNameTooLong() =>
             _validator.ShouldHaveValidationErrorFor(model => model.Name, "asdfghjkløæåasdfghjkløæåasdfghjkløæåasdfghjkløæåasdfghjkløæåa");
 
-        [Fact]
-        public void TestNameValidationValid() =>
-            _validator.ShouldNotHaveValidationErrorFor(model => model.Name, "Jireugi");
+        [Theory]
+        [InlineData("Jireugi")]
+        [InlineData("Arae-makgi")]
+        public void TestNameValidationValid(string testString) =>
+            _validator.ShouldNotHaveValidationErrorFor(model => model.Name, testString);
         
         [Fact]
         public void TestNameInvalidCharacters() =>

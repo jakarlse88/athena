@@ -8,7 +8,7 @@
         /// and more than one space between words/characters is disallowed.
         /// </summary>
         internal const string ValidAlphabetic =
-            @"^[A-Za-z]+( [A-Za-z]+)*$";
+            @"^[A-Za-z]+([- ]*[A-Za-z]+)*$";
 
         /// <summary>
         /// String must contain only hangeul vowels and spaces.

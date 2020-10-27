@@ -152,6 +152,7 @@ namespace Athena.Test.ServiceTests
             var mockTechniqueRepository = new Mock<IRepository<Technique>>();
             mockTechniqueRepository
                 .Setup(x => x.Insert(It.IsAny<Technique>()))
+                .ReturnsAsync(new Technique { Name = model.Name, TechniqueCategoryName = model.TechniqueCategoryName, TechniqueTypeName = model.TechniqueTypeName })
                 .Verifiable();
 
             var mockTechniqueCategoryRepository = new Mock<IRepository<TechniqueCategory>>();

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using Athena.Data;
+using Athena.Infrastructure.Auth;
 using Athena.Infrastructure.Config;
 using Athena.Repositories;
 using Athena.Services;
@@ -89,17 +90,50 @@ namespace Athena.Infrastructure
                     .RequireAuthenticatedUser()
                     .Build();
 
-                options.AddPolicy("HasTechniquePermissions",
-                    policy => policy.RequireClaim("permissions", "technique:read", "technique:write",
-                        "technique:update", "technique:delete"));
-                
-                options.AddPolicy("HasTechniqueTypePermissions",
-                    policy => policy.RequireClaim("permissions", "techniquetype:read", "techniquetype:write",
-                        "techniquetype:update", "techniquetype:delete"));
-                
-                options.AddPolicy("HasTechniqueCategoryPermissions",
-                    policy => policy.RequireClaim("permissions", "techniquecategory:read", "techniquecategory:write",
-                        "techniquecategory:update", "techniquecategory:delete"));
+                //
+                // Technique
+                //
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueReadPermission,
+                    policy => policy.RequireClaim("permissions", "technique:read"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueWritePermission,
+                    policy => policy.RequireClaim("permissions", "technique:write"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueUpdatePermission,
+                    policy => policy.RequireClaim("permissions", "technique:update"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueDeletePermission,
+                    policy => policy.RequireClaim("permissions", "technique:delete"));
+
+                //
+                // TechniqueType
+                //
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeReadPermission,
+                    policy => policy.RequireClaim("permissions", "techniquetype:read"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeWritePermission,
+                    policy => policy.RequireClaim("permissions", "techniquetype:write"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeUpdatePermission,
+                    policy => policy.RequireClaim("permissions", "techniquetype:update"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeDeletePermission,
+                    policy => policy.RequireClaim("permissions", "techniquetype:delete"));
+
+                //
+                // TechniqueCategory
+                //
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryReadPermission,
+                    policy => policy.RequireClaim("permissions", "techniquecategory:read"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryWritePermission,
+                    policy => policy.RequireClaim("permissions", "techniquecategory:write"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryUpdatePermission,
+                    policy => policy.RequireClaim("permissions", "techniquecategory:update"));
+
+                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryDeletePermission,
+                    policy => policy.RequireClaim("permissions", "techniquecategory:delete"));
             });
 
             return services;

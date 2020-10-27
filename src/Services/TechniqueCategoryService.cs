@@ -7,6 +7,7 @@ using Athena.Repositories;
 using AutoMapper;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Athena.Models.Validators;
 
 namespace Athena.Services
 {
@@ -29,19 +30,25 @@ namespace Athena.Services
         /// <exception cref="ArgumentNullException"></exception>
         public async Task<TechniqueCategoryViewModel> CreateAsync(TechniqueCategoryViewModel model)
         {
-            if (model == null)
+            if (model is null)
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            
+
             if (string.IsNullOrWhiteSpace(model.Name))
             {
                 throw new ArgumentNullException(nameof(model.Name));
             }
 
-            var entity = new TechniqueCategory { Name = model.Name };
-
-            await _techniqueCategoryRepository.Insert(entity);
+            var entity =
+                await _techniqueCategoryRepository
+                    .Insert(new TechniqueCategory
+                    {
+                        Name = model.Name,
+                        NameHangeul = model.NameHangeul,
+                        NameHanja = model.NameHanja,
+                        Description = model.Description
+                    });
 
             return _mapper.Map<TechniqueCategoryViewModel>(entity);
         }
@@ -60,7 +67,7 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(name));
             }
 
-            if (!new Regex(@"^[a-zA-Z ]*$").IsMatch(name))
+            if (!new Regex(ValidationRegex.ValidAlphabetic).IsMatch(name))
             {
                 throw new ArgumentException("Argument contains one or more invalid characters.", nameof(name));
             }
@@ -69,10 +76,10 @@ namespace Athena.Services
                 await _techniqueCategoryRepository
                     .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
 
-            var techniqueCategory = result as TechniqueCategory[] ?? result.ToArray();
-            
-            return techniqueCategory.Any() 
-                ? _mapper.Map<TechniqueCategoryViewModel>(techniqueCategory.FirstOrDefault()) 
+            var resultList = result as List<TechniqueCategory> ?? result.ToList();
+
+            return resultList.Count > 0
+                ? _mapper.Map<TechniqueCategoryViewModel>(result.FirstOrDefault())
                 : null;
         }
 
@@ -85,9 +92,9 @@ namespace Athena.Services
         {
             var results = await _techniqueCategoryRepository.GetByConditionAsync(_ => true);
 
-            var models = _mapper.Map<ICollection<TechniqueCategoryViewModel>>(results);
-
-            return models;
+            return results.Any()
+                ? _mapper.Map<ICollection<TechniqueCategoryViewModel>>(results)
+                : new HashSet<TechniqueCategoryViewModel>();
         }
     }
 }
