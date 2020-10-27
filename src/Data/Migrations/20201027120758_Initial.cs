@@ -10,9 +10,10 @@ namespace Athena.Data.Migrations
                 name: "FormFamily",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -23,9 +24,10 @@ namespace Athena.Data.Migrations
                 name: "RelativeDirection",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -36,9 +38,10 @@ namespace Athena.Data.Migrations
                 name: "RotationCategory",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -49,9 +52,10 @@ namespace Athena.Data.Migrations
                 name: "StanceCategory",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,9 +66,10 @@ namespace Athena.Data.Migrations
                 name: "StanceType",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -75,9 +80,10 @@ namespace Athena.Data.Migrations
                 name: "TechniqueCategory",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,9 +94,10 @@ namespace Athena.Data.Migrations
                 name: "TechniqueType",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,7 +108,8 @@ namespace Athena.Data.Migrations
                 name: "TransitionCategory",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -112,10 +120,11 @@ namespace Athena.Data.Migrations
                 name: "Form",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    FormFamilyName = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FormFamilyName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -132,11 +141,12 @@ namespace Athena.Data.Migrations
                 name: "Stance",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    StanceCategoryName = table.Column<string>(maxLength: 50, nullable: false),
-                    StanceTypeName = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    StanceCategoryName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    StanceTypeName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -159,11 +169,12 @@ namespace Athena.Data.Migrations
                 name: "Technique",
                 columns: table => new
                 {
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    TechniqueTypeName = table.Column<string>(maxLength: 50, nullable: false),
-                    TechniqueCategoryName = table.Column<string>(maxLength: 50, nullable: false),
-                    NameHangeul = table.Column<string>(maxLength: 50, nullable: true),
-                    NameHanja = table.Column<string>(maxLength: 50, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TechniqueTypeName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TechniqueCategoryName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NameHangeul = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    NameHanja = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -186,11 +197,12 @@ namespace Athena.Data.Migrations
                 name: "Transition",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
-                    RotationCategoryName = table.Column<string>(maxLength: 50, nullable: false),
-                    RelativeDirectionName = table.Column<string>(maxLength: 50, nullable: false),
-                    StanceName = table.Column<string>(maxLength: 50, nullable: false),
-                    TechniqueName = table.Column<string>(maxLength: 50, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    RotationCategoryName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RelativeDirectionName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    StanceName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TechniqueName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -219,10 +231,11 @@ namespace Athena.Data.Migrations
                 name: "Movement",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
-                    StanceName = table.Column<string>(maxLength: 50, nullable: false),
-                    TechniqueName = table.Column<string>(maxLength: 50, nullable: false),
-                    TransitionId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    StanceName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TechniqueName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TransitionId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -251,23 +264,23 @@ namespace Athena.Data.Migrations
                 name: "TransitionCategoryTransition",
                 columns: table => new
                 {
-                    TransitionCategoryName = table.Column<string>(maxLength: 50, nullable: false),
-                    TransitionId = table.Column<int>(nullable: false)
+                    TransitionCategoryName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TransitionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TransitionCategoryTransition", x => new { x.TransitionCategoryName, x.TransitionId });
                     table.ForeignKey(
-                        name: "FK_TransitionCategoryTransition_TransitionCategory",
-                        column: x => x.TransitionCategoryName,
-                        principalTable: "TransitionCategory",
-                        principalColumn: "Name",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_TransitionCategoryTransition_Transition",
                         column: x => x.TransitionId,
                         principalTable: "Transition",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TransitionCategoryTransition_TransitionCategory",
+                        column: x => x.TransitionCategoryName,
+                        principalTable: "TransitionCategory",
+                        principalColumn: "Name",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -275,9 +288,9 @@ namespace Athena.Data.Migrations
                 name: "NumberInSequence",
                 columns: table => new
                 {
-                    FormName = table.Column<string>(maxLength: 50, nullable: false),
-                    MovementId = table.Column<int>(nullable: false),
-                    OrdinalNumber = table.Column<byte>(nullable: false)
+                    FormName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    MovementId = table.Column<int>(type: "int", nullable: false),
+                    OrdinalNumber = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -306,28 +319,28 @@ namespace Athena.Data.Migrations
                 table: "Form",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_Form_NameHanja",
                 table: "Form",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_FormFamily_NameHangeul",
                 table: "FormFamily",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_FormFamily_NameHanja",
                 table: "FormFamily",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movement_TechniqueName",
@@ -355,42 +368,28 @@ namespace Athena.Data.Migrations
                 table: "RelativeDirection",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_RelativeDirection_NameHanja",
                 table: "RelativeDirection",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_RotationCategory_NameHangeul",
                 table: "RotationCategory",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_RotationCategory_NameHanja",
                 table: "RotationCategory",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "UK_Stance_NameHangeul",
-                table: "Stance",
-                column: "NameHangeul",
-                unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "UK_Stance_NameHanja",
-                table: "Stance",
-                column: "NameHanja",
-                unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stance_StanceCategoryName",
@@ -409,46 +408,46 @@ namespace Athena.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "UK_Stance_NameHangeul",
+                table: "Stance",
+                column: "NameHangeul",
+                unique: true,
+                filter: "([NameHangeul] IS NOT NULL)");
+
+            migrationBuilder.CreateIndex(
+                name: "UK_Stance_NameHanja",
+                table: "Stance",
+                column: "NameHanja",
+                unique: true,
+                filter: "([NameHanja] IS NOT NULL)");
+
+            migrationBuilder.CreateIndex(
                 name: "UK_StanceCategory_NameHangeul",
                 table: "StanceCategory",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_StanceCategory_NameHanja",
                 table: "StanceCategory",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_StanceType_NameHangeul",
                 table: "StanceType",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_StanceType_NameHanja",
                 table: "StanceType",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "UK_Technique_NameHangeul",
-                table: "Technique",
-                column: "NameHangeul",
-                unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "UK_Technique_NameHanja",
-                table: "Technique",
-                column: "NameHanja",
-                unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Technique_TechniqueCategoryName",
@@ -467,32 +466,46 @@ namespace Athena.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "UK_Technique_NameHangeul",
+                table: "Technique",
+                column: "NameHangeul",
+                unique: true,
+                filter: "([NameHangeul] IS NOT NULL)");
+
+            migrationBuilder.CreateIndex(
+                name: "UK_Technique_NameHanja",
+                table: "Technique",
+                column: "NameHanja",
+                unique: true,
+                filter: "([NameHanja] IS NOT NULL)");
+
+            migrationBuilder.CreateIndex(
                 name: "UK_TechniqueCategory_NameHangeul",
                 table: "TechniqueCategory",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_TechniqueCategory_NameHanja",
                 table: "TechniqueCategory",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_TechniqueType_NameHangeul",
                 table: "TechniqueType",
                 column: "NameHangeul",
                 unique: true,
-                filter: "[NameHangeul] IS NOT NULL");
+                filter: "([NameHangeul] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "UK_TechniqueType_NameHanja",
                 table: "TechniqueType",
                 column: "NameHanja",
                 unique: true,
-                filter: "[NameHanja] IS NOT NULL");
+                filter: "([NameHanja] IS NOT NULL)");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transition_RotationCategoryName",

@@ -27,7 +27,7 @@ namespace Athena.Test.ServiceTests
         /**
          * GetByName()
          */
-        
+
         [Theory]
         [InlineData(null)]
         [InlineData("   ")]
@@ -105,7 +105,7 @@ namespace Athena.Test.ServiceTests
             Assert.Equal("name", ex.ParamName);
         }
 
-        
+
         /**
          * Create
          */
@@ -151,6 +151,7 @@ namespace Athena.Test.ServiceTests
             var mockTechniqueTypeRepository = new Mock<IRepository<TechniqueType>>();
             mockTechniqueTypeRepository
                 .Setup(x => x.Insert(It.IsAny<TechniqueType>()))
+                .ReturnsAsync(new TechniqueType { Name = model.Name })
                 .Verifiable();
 
             var service = new TechniqueTypeService(mockTechniqueTypeRepository.Object, _mapper);
@@ -166,7 +167,7 @@ namespace Athena.Test.ServiceTests
             mockTechniqueTypeRepository
                 .Verify(x => x.Insert(It.IsAny<TechniqueType>()), Times.Once());
         }
-        
+
         /**
          * GetAllAsync()
          */

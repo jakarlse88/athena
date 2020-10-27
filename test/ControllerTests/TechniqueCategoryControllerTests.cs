@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Athena.Controllers;
 using Athena.Models.ViewModels;
 using Athena.Services;
+using AutoMapper.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -11,9 +14,28 @@ namespace Athena.Test.ControllerTests
 {
     public class TechniqueCategoryControllerTests
     {
-                /**
-         * Get()
+        /**
+         * All actions should have authorize attributes
          */
+        [Fact]
+        public void TestHasAuthorizeAttribute()
+        {
+            // Arrange
+            var controller = new TechniqueCategoryController(null);
+
+            // Act
+            var methods = controller.GetType().GetDeclaredMethods();
+
+            foreach (var method in methods)
+            {
+                // Assert
+                Assert.Equal(typeof(AuthorizeAttribute), method.GetCustomAttributes(typeof(AuthorizeAttribute), true).First().GetType());
+            }
+        }
+
+        /**
+        * Get()
+        */
         [Theory]
         [InlineData(null)]
         [InlineData(" ")]

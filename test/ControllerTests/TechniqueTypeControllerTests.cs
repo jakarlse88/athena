@@ -6,11 +6,33 @@ using Athena.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using Microsoft.AspNetCore.Authorization;
+using AutoMapper.Internal;
+using System.Linq;
 
 namespace Athena.Test.ControllerTests
 {
     public class TechniqueTypeTests
     {
+        /**
+         * All actions should have authorize attributes
+         */
+        [Fact]
+        public void TestHasAuthorizeAttribute()
+        {
+            // Arrange
+            var controller = new TechniqueTypeController(null);
+
+            // Act
+            var methods = controller.GetType().GetDeclaredMethods();
+
+            foreach (var method in methods)
+            {
+                // Assert
+                Assert.Equal(typeof(AuthorizeAttribute), method.GetCustomAttributes(typeof(AuthorizeAttribute), true).First().GetType());
+            }
+        }
+
         /**
          * Get()
          */
@@ -124,7 +146,7 @@ namespace Athena.Test.ControllerTests
             mockService
                 .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()), Times.Once);
         }
-        
+
         /**
          * Get() 
          */

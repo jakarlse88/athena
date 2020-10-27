@@ -20,10 +20,10 @@ namespace Athena.Test.ServiceTests
         public TechniqueCategoryServiceTests()
         {
             var configuration = new MapperConfiguration(profiles => profiles.AddProfile(new TechniqueCategoryMappingProfile()));
-            
+
             _mapper = new Mapper(configuration);
         }
-        
+
         /**
          * GetByNameAsync()
          */
@@ -104,7 +104,7 @@ namespace Athena.Test.ServiceTests
             mockRepository
                 .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()), Times.Once());
         }
-        
+
         /**
          * Create
          */
@@ -150,6 +150,7 @@ namespace Athena.Test.ServiceTests
             var mockTechniqueCategoryRepository = new Mock<IRepository<TechniqueCategory>>();
             mockTechniqueCategoryRepository
                 .Setup(x => x.Insert(It.IsAny<TechniqueCategory>()))
+                .ReturnsAsync(new TechniqueCategory { Name = model.Name })
                 .Verifiable();
 
             var service = new TechniqueCategoryService(mockTechniqueCategoryRepository.Object, _mapper);
@@ -165,7 +166,7 @@ namespace Athena.Test.ServiceTests
             mockTechniqueCategoryRepository
                 .Verify(x => x.Insert(It.IsAny<TechniqueCategory>()), Times.Once());
         }
-        
+
         /**
          * GetAll()
          */

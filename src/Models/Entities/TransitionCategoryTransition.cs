@@ -1,4 +1,6 @@
-﻿namespace Athena.Models.Entities
+﻿#nullable disable
+
+namespace Athena.Models.Entities
 {
     public partial class TransitionCategoryTransition
     {

@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Athena.Models.Validators
+﻿namespace Athena.Models.Validators
 {
     internal static class ValidationRegex
     {
@@ -10,7 +8,7 @@ namespace Athena.Models.Validators
         /// and more than one space between words/characters is disallowed.
         /// </summary>
         internal const string ValidAlphabetic =
-            @"^[A-Za-z]+( [A-Za-z]+)*$";
+            @"^[A-Za-z]+([- ]*[A-Za-z]+)*$";
 
         /// <summary>
         /// String must contain only hangeul vowels and spaces.

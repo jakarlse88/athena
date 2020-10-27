@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
+using Athena.Models.Validators;
 using Athena.Models.ViewModels;
 using Athena.Repositories;
 using AutoMapper;
 
 namespace Athena.Services
 {
-    public class TechniqueTypeService :  ITechniqueTypeService
+    public class TechniqueTypeService : ITechniqueTypeService
     {
         private readonly IRepository<TechniqueType> _techniqueTypeRepository;
         private readonly IMapper _mapper;
@@ -20,7 +21,7 @@ namespace Athena.Services
             _techniqueTypeRepository = techniqueTypeRepository;
             _mapper = mapper;
         }
-        
+
         /// <summary>
         /// Get a <see cref="TechniqueType"/> entity by its Name property.
         /// </summary>
@@ -34,8 +35,8 @@ namespace Athena.Services
             {
                 throw new ArgumentNullException(nameof(name));
             }
-            
-            if (!new Regex(@"^[a-zA-Z ]*$").IsMatch(name))
+
+            if (!new Regex(ValidationRegex.ValidAlphabetic).IsMatch(name))
             {
                 throw new ArgumentException("Argument contains one or more invalid characters.", nameof(name));
             }
@@ -44,10 +45,10 @@ namespace Athena.Services
                 await _techniqueTypeRepository
                     .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
 
-            var techniqueType = result as TechniqueType[] ?? result.ToArray();
-            
-            return techniqueType.Any() 
-                ? _mapper.Map<TechniqueTypeViewModel>(techniqueType.FirstOrDefault()) 
+            var techniqueType = result as List<TechniqueType> ?? result.ToList();
+
+            return (techniqueType.Count is 1)
+                ? _mapper.Map<TechniqueTypeViewModel>(techniqueType.FirstOrDefault())
                 : null;
         }
 
@@ -59,9 +60,7 @@ namespace Athena.Services
         {
             var results = await _techniqueTypeRepository.GetByConditionAsync(_ => true);
 
-            var models = _mapper.Map<ICollection<TechniqueTypeViewModel>>(results);
-
-            return models;
+            return _mapper.Map<ICollection<TechniqueTypeViewModel>>(results);
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace Athena.Services
         /// <exception cref="ArgumentNullException"></exception>
         public async Task<TechniqueTypeViewModel> CreateAsync(TechniqueTypeViewModel model)
         {
-            if (model == null)
+            if (model is null)
             {
                 throw new ArgumentNullException(nameof(model));
             }
@@ -82,9 +81,7 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(model.Name));
             }
 
-            var entity = new TechniqueType { Name = model.Name };
-
-            await _techniqueTypeRepository.Insert(entity);
+            var entity = await _techniqueTypeRepository.Insert(new TechniqueType { Name = model.Name });
 
             return _mapper.Map<TechniqueTypeViewModel>(entity);
         }
