@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Athena.Models.Validators
+﻿namespace Athena.Models.Validators
 {
     internal static class ValidationRegex
     {

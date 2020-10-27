@@ -1,18 +1,21 @@
 ﻿using System.Collections.Generic;
 
+#nullable disable
+
 namespace Athena.Models.Entities
 {
     public partial class TechniqueCategory
     {
         public TechniqueCategory()
         {
-            Technique = new HashSet<Technique>();
+            Techniques = new HashSet<Technique>();
         }
 
         public string Name { get; set; }
         public string NameHangeul { get; set; }
         public string NameHanja { get; set; }
+        public string Description { get; set; }
 
-        public virtual ICollection<Technique> Technique { get; set; }
+        public virtual ICollection<Technique> Techniques { get; set; }
     }
 }

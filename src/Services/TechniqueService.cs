@@ -8,7 +8,6 @@ using Athena.Models.Entities;
 using Athena.Models.ViewModels;
 using Athena.Repositories;
 using AutoMapper;
-// ReSharper disable SpecifyStringComparison
 
 namespace Athena.Services
 {

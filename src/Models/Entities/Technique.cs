@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 
+#nullable disable
+
 namespace Athena.Models.Entities
 {
     public partial class Technique
     {
         public Technique()
         {
-            Movement = new HashSet<Movement>();
-            Transition = new HashSet<Transition>();
+            Movements = new HashSet<Movement>();
+            Transitions = new HashSet<Transition>();
         }
 
         public string Name { get; set; }
@@ -15,10 +17,11 @@ namespace Athena.Models.Entities
         public string TechniqueCategoryName { get; set; }
         public string NameHangeul { get; set; }
         public string NameHanja { get; set; }
+        public string Description { get; set; }
 
         public virtual TechniqueCategory TechniqueCategoryNameNavigation { get; set; }
         public virtual TechniqueType TechniqueTypeNameNavigation { get; set; }
-        public virtual ICollection<Movement> Movement { get; set; }
-        public virtual ICollection<Transition> Transition { get; set; }
+        public virtual ICollection<Movement> Movements { get; set; }
+        public virtual ICollection<Transition> Transitions { get; set; }
     }
 }
