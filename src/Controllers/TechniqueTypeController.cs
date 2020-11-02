@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.Auth;
+using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.Validators;
-using Athena.Models.ViewModels;
 using Athena.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +24,7 @@ namespace Athena.Controllers
         
         /// <summary>
         /// Get all <see cref="TechniqueType"/> entities,
-        /// represented as <see cref="TechniqueTypeViewModel"/> DTOs.
+        /// represented as <see cref="TechniqueTypeDTO"/> DTOs.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -84,7 +84,7 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Post(TechniqueTypeViewModel model)
+        public async Task<IActionResult> Post(TechniqueTypeDTO model)
         {
             if (model == null)
             {

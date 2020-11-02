@@ -1,6 +1,5 @@
 ﻿using System;
 using Athena.Infrastructure.Auth;
-using Castle.DynamicProxy.Generators;
 using Xunit;
 
 namespace Athena.Test

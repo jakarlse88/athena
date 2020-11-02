@@ -1,10 +1,10 @@
 ﻿using System.Text.RegularExpressions;
-using Athena.Models.ViewModels;
+using Athena.Models.DTOs;
 using FluentValidation;
 
 namespace Athena.Models.Validators
 {
-    public class TechniqueTypeValidator : AbstractValidator<TechniqueTypeViewModel>
+    public class TechniqueTypeValidator : AbstractValidator<TechniqueTypeDTO>
     {
         public TechniqueTypeValidator()
         {

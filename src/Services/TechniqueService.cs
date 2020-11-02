@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.Exceptions;
+using Athena.Models.DTOs;
 using Athena.Models.Entities;
-using Athena.Models.ViewModels;
 using Athena.Repositories;
 using Athena.Models.Validators;
 using AutoMapper;
@@ -34,7 +34,7 @@ namespace Athena.Services
         /// <param name="model"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public async Task<TechniqueViewModel> CreateAsync(TechniqueViewModel model)
+        public async Task<TechniqueDTO> CreateAsync(TechniqueDTO model)
         {
             if (model is null)
             {
@@ -48,7 +48,7 @@ namespace Athena.Services
 
             var entity = await _techniqueRepository.Insert(await MapNewEntity(model));
 
-            return _mapper.Map<TechniqueViewModel>(entity);
+            return _mapper.Map<TechniqueDTO>(entity);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Athena.Services
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// /// <exception cref="ArgumentException"><paramref name="name"/> argument contains one or more illegal characters.</exception>
-        public async Task<TechniqueViewModel> GetByNameAsync(string name)
+        public async Task<TechniqueDTO> GetByNameAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -77,7 +77,7 @@ namespace Athena.Services
             var technique = result as List<Technique> ?? result.ToList();
             
             return (technique.Count is 1)
-                ? _mapper.Map<TechniqueViewModel>(technique.FirstOrDefault()) 
+                ? _mapper.Map<TechniqueDTO>(technique.FirstOrDefault()) 
                 : null;
         }
 
@@ -85,11 +85,11 @@ namespace Athena.Services
         /// Get all <see ctechref="Technique"/> entities.
         /// </summary>
         /// <returns></returns>
-        public async Task<ICollection<TechniqueViewModel>> GetAllAsync()
+        public async Task<ICollection<TechniqueDTO>> GetAllAsync()
         {
             var results = await _techniqueRepository.GetByConditionAsync(_ => true);
 
-            return _mapper.Map<ICollection<TechniqueViewModel>>(results);
+            return _mapper.Map<ICollection<TechniqueDTO>>(results);
         }
 
         /// <summary>
@@ -97,8 +97,8 @@ namespace Athena.Services
         /// </summary>
         /// <param name="entityName"></param>
         /// <param name="model">Model containing updated properties.</param>
-        /// /// <exception cref="ArgumentNullException"></exception>
-        public async Task UpdateAsync(string entityName, TechniqueViewModel model)
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task UpdateAsync(string entityName, TechniqueDTO model)
         {
             if (string.IsNullOrWhiteSpace(entityName))
             {
@@ -124,7 +124,7 @@ namespace Athena.Services
          */
         
         /// <summary>
-        /// Maps a given <see cref="TechniqueViewModel"/> model to a new <seealso cref="Technique"/> entity.
+        /// Gets a <see cref="Technique"/> entity by its 'Name' property.
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
@@ -148,11 +148,11 @@ namespace Athena.Services
         }
         
         /// <summary>
-        /// Maps a given <see cref="TechniqueViewModel"/> model to a new <seealso cref="Technique"/> entity.
+        /// Maps a given <see cref="TechniqueDTO"/> model to a new <seealso cref="Technique"/> entity.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private async Task<Technique> MapNewEntity(TechniqueViewModel model)
+        private async Task<Technique> MapNewEntity(TechniqueDTO model)
         {
             if (model is null)
             {
@@ -171,12 +171,12 @@ namespace Athena.Services
         }
 
         /// <summary>
-        /// Map the properties of a <see cref="TechniqueViewModel"/> model onto an existing
+        /// Map the properties of a <see cref="TechniqueDTO"/> model onto an existing
         /// <see cref="Technique"/> entity.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="model"></param>
-        private async Task MapExistingEntity(Technique entity, TechniqueViewModel model)
+        private async Task MapExistingEntity(Technique entity, TechniqueDTO model)
         {
             if (entity is null)
             {

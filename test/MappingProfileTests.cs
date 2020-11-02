@@ -1,5 +1,5 @@
-﻿using Athena.Models.Entities;
-using Athena.Models.ViewModels;
+﻿using Athena.Models.DTOs;
+using Athena.Models.Entities;
 using AutoMapper;
 using Xunit;
 
@@ -12,7 +12,7 @@ namespace Athena.Test
         {
             // Arrange
             var configuration = new MapperConfiguration(opt =>
-                opt.CreateMap<Technique, TechniqueViewModel>());
+                opt.CreateMap<Technique, TechniqueDTO>());
             
             // Act
 
@@ -25,7 +25,7 @@ namespace Athena.Test
         {
             // Arrange
             var configuration = new MapperConfiguration(opt =>
-                opt.CreateMap<TechniqueType, TechniqueTypeViewModel>());
+                opt.CreateMap<TechniqueType, TechniqueTypeDTO>());
 
             // Act
 
