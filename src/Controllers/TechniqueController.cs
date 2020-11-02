@@ -61,7 +61,7 @@ namespace Athena.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("all/"]
+        [Route("all/")]
         [Authorize(Policy = AuthorizationPolicyConstants.TechniqueReadPermission)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
@@ -105,7 +105,7 @@ namespace Athena.Controllers
         /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
         /// <response code="404">No entity was found matching the given identifier.</response>
         [HttpPut]
-        [Authorize(Policy = AuthorizationPolicyConstants.HasTechniqueUpdatePermission)]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueUpdatePermission)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

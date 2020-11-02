@@ -13,9 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System.IO;
-using System.Reflection;
-using System;
 
 namespace Athena.Infrastructure
 {
