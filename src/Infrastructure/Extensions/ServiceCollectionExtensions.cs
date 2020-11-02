@@ -11,8 +11,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using System.IO;
+using System.Reflection;
+using System;
 
 namespace Athena.Infrastructure
 {
@@ -53,8 +56,6 @@ namespace Athena.Infrastructure
         internal static IServiceCollection ConfigureAuthentication(this IServiceCollection services,
             IConfiguration configuration)
         {
-            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
             services
                 .AddAuthentication(options =>
                 {
@@ -67,11 +68,6 @@ namespace Athena.Infrastructure
 
                     options.Authority = authConfig.Authority;
                     options.Audience = authConfig.ApiIdentifier;
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        RoleClaimType = "https://schemas.jakarlse.com/roles"
-                    };
                 });
 
             return services;
@@ -81,8 +77,10 @@ namespace Athena.Infrastructure
         /// Configures policy-based authorization.
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        internal static IServiceCollection ConfigureAuthorization(this IServiceCollection services)
+        internal static IServiceCollection ConfigureAuthorization(this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddAuthorization(options =>
             {
@@ -90,55 +88,36 @@ namespace Athena.Infrastructure
                     .RequireAuthenticatedUser()
                     .Build();
 
-                //
-                // Technique
-                //
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueReadPermission,
-                    policy => policy.RequireClaim("permissions", "technique:read"));
+                var section = configuration.GetSection(AuthorizationPolicyOptions.Permissions);
 
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueWritePermission,
-                    policy => policy.RequireClaim("permissions", "technique:write"));
+                if (!section.Exists())
+                {
+                    throw new Exception(
+                        $"The section '{AuthorizationPolicyConstants.PermissionsClaimName}' does not exist in the configuration object");
+                }
 
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueUpdatePermission,
-                    policy => policy.RequireClaim("permissions", "technique:update"));
+                Log.Information("Building authorization policies...");
 
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueDeletePermission,
-                    policy => policy.RequireClaim("permissions", "technique:delete"));
+                foreach (var child in section.GetChildren())
+                {
+                    foreach (var childOfChild in child.GetChildren())
+                    {
+                        var policyName = AuthorizationPolicyConstants.MapConfigKeyToPolicyName(childOfChild.Key);
 
-                //
-                // TechniqueType
-                //
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeReadPermission,
-                    policy => policy.RequireClaim("permissions", "techniquetype:read"));
+                        options.AddPolicy(policyName, policy =>
+                            policy.RequireClaim(AuthorizationPolicyOptions.PermissionClaimName,
+                                childOfChild.Value));
 
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeWritePermission,
-                    policy => policy.RequireClaim("permissions", "techniquetype:write"));
+                        Log.Information(
+                            $"\t-> Built policy '{policyName}', which requires claim '{childOfChild.Value}'");
+                    }
+                }
 
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeUpdatePermission,
-                    policy => policy.RequireClaim("permissions", "techniquetype:update"));
-
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueTypeDeletePermission,
-                    policy => policy.RequireClaim("permissions", "techniquetype:delete"));
-
-                //
-                // TechniqueCategory
-                //
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryReadPermission,
-                    policy => policy.RequireClaim("permissions", "techniquecategory:read"));
-
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryWritePermission,
-                    policy => policy.RequireClaim("permissions", "techniquecategory:write"));
-
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryUpdatePermission,
-                    policy => policy.RequireClaim("permissions", "techniquecategory:update"));
-
-                options.AddPolicy(AuthorizationPolicyConstants.HasTechniqueCategoryDeletePermission,
-                    policy => policy.RequireClaim("permissions", "techniquecategory:delete"));
+                Log.Information("Authorization policies built.");
             });
 
             return services;
         }
-
 
         /// <summary>
         /// Configures the application DB context.
@@ -150,7 +129,7 @@ namespace Athena.Infrastructure
             IConfiguration configuration)
         {
             services.AddDbContext<AthenaDbContext>(opt =>
-                opt.UseSqlServer(configuration.GetConnectionString("AthenaDb")));
+                opt.UseSqlServer(configuration.GetConnectionString(AthenaDbContext.ConnectionStringName)));
 
             return services;
         }
@@ -180,8 +159,6 @@ namespace Athena.Infrastructure
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
-
-                // The real question is, what to do re: CORS when the application/services are deployed with Kubernetes?
             }));
 
             return services;

@@ -16,6 +16,8 @@ namespace Athena.Data
         {
         }
 
+        internal static string ConnectionStringName => "AthenaDb";
+        
         public virtual DbSet<Form> Forms { get; set; }
         public virtual DbSet<FormFamily> FormFamilies { get; set; }
         public virtual DbSet<Movement> Movements { get; set; }

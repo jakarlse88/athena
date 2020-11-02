@@ -22,7 +22,7 @@ namespace Athena
         {
             services
                 .ConfigureAuthentication(Configuration)
-                .ConfigureAuthorization()
+                .ConfigureAuthorization(Configuration)
                 .AddControllers()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
