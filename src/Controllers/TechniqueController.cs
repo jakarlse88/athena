@@ -35,7 +35,7 @@ namespace Athena.Controllers
         /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
         /// <response code="404">No entity was found matching the given identifier.</response>
         [HttpGet]
-        [Authorize(Policy = AuthorizationPolicyConstants.HasTechniqueReadPermission)]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueReadPermission)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -62,7 +62,7 @@ namespace Athena.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("all/")]
-        [Authorize(Policy = AuthorizationPolicyConstants.HasTechniqueReadPermission)]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueReadPermission)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
@@ -78,7 +78,7 @@ namespace Athena.Controllers
         /// <response code="401">User is not authorized to access this resource.</response>
         /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
         [HttpPost]
-        [Authorize(Policy = AuthorizationPolicyConstants.HasTechniqueWritePermission)]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueWritePermission)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -105,7 +105,7 @@ namespace Athena.Controllers
         /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
         /// <response code="404">No entity was found matching the given identifier.</response>
         [HttpPut]
-        [Authorize(Policy = AuthorizationPolicyConstants.HasTechniqueUpdatePermission)]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueUpdatePermission)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
