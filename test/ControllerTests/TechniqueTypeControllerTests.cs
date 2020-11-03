@@ -263,5 +263,76 @@ namespace Athena.Test.ControllerTests
                 .Verify(x => x.DeleteAsync(It.IsAny<string>()), Times.Once());
         }
         
+        /**
+         * PUT
+         */
+        [Fact]
+        public async Task TestPutModelNull()
+        {
+            // Arrange
+            var controller = new TechniqueTypeController(null);
+
+            // Act
+            var response = await controller.Put(null);
+
+            // Assert
+            Assert.IsAssignableFrom<BadRequestResult>(response);
+        }
+
+        [Fact]
+        public async Task TestPutModelNamePropertyNull()
+        {
+            // Arrange
+            var controller = new TechniqueTypeController(null);
+
+            // Act
+            var response = await controller.Put(new TechniqueTypeDTO());
+
+            // Assert
+            Assert.IsAssignableFrom<BadRequestResult>(response);
+        }
+
+        [Fact]
+        public async Task TestPutUpdateThrows()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueTypeService>();
+            mockService
+                .Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueTypeDTO>()))
+                .ThrowsAsync(new EntityNotFoundException())
+                .Verifiable();
+
+            var controller = new TechniqueTypeController(mockService.Object);
+
+            // Act
+            var response = await controller.Put(new TechniqueTypeDTO("test", "", "", ""));
+
+            // Assert
+            Assert.IsAssignableFrom<NotFoundObjectResult>(response);
+
+            mockService
+                .Verify(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueTypeDTO>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestPut()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueTypeService>();
+            mockService
+                .Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueTypeDTO>()))
+                .Verifiable();
+
+            var controller = new TechniqueTypeController(mockService.Object);
+
+            // Act
+            var response = await controller.Put(new TechniqueTypeDTO("test", "", "", ""));
+
+            // Assert
+            Assert.IsAssignableFrom<NoContentResult>(response);
+
+            mockService
+                .Verify(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueTypeDTO>()), Times.Once());
+        }
     }
 }
