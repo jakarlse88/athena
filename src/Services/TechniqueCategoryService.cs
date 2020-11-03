@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Athena.Infrastructure.Exceptions;
 using Athena.Models.DTOs;
 using Athena.Models.Validators;
+using Serilog;
 
 namespace Athena.Services
 {
@@ -26,7 +27,7 @@ namespace Athena.Services
         /// <summary>
         /// Create a new <see cref="Technique"/> entity.
         /// </summary>
-        /// <param entityName="model"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         public async Task<TechniqueCategoryDTO> CreateAsync(TechniqueCategoryDTO model)
@@ -57,7 +58,7 @@ namespace Athena.Services
         /// <summary>
         /// Get a <see cref="TechniqueCategory"/> entity by its Name property.
         /// </summary>
-        /// <param entityName="name"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"><paramref entityName="name"/> argument contains one or more illegal characters.</exception>
@@ -119,9 +120,34 @@ namespace Athena.Services
 
             var entity =
                 await GetTechniqueCategoryAsync(entityName);
-            
+
             MapExistingEntity(entity, model);
             await _techniqueCategoryRepository.UpdateAsync(entity);
+        }
+
+        /// <summary>
+        /// Deletes the <see cref="TechniqueCategory"/> entity whose 'Name' property matches the
+        /// <paramref name="entityName"/> parameter.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task DeleteAsync(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentNullException(nameof(entityName));
+            }
+
+            try
+            {
+                await _techniqueCategoryRepository.DeleteAsync(await GetTechniqueCategoryAsync(entityName));
+            }
+            catch (EntityNotFoundException e)
+            {
+                Log.Error($"An error occurred while attempting to delete a '{typeof(TechniqueCategory)}' entity: {@e}");
+                throw;
+            }
         }
 
         /**
@@ -129,7 +155,6 @@ namespace Athena.Services
        * Private helper methods
        * 
        */
-        
         /// <summary>
         /// Gets a <see cref="TechniqueCategory"/> entity by its 'Name' property.
         /// </summary>
@@ -143,16 +168,16 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(entityName));
             }
 
-            var entity =
+            var result =
                 await _techniqueCategoryRepository.GetByConditionAsync(t => t.Name.ToLower() == entityName.ToLower());
 
-            if (entity is null)
+            if (result is null || !result.Any())
             {
-                throw new EntityNotFoundException("Couldn't find an entity matching the specified entityName",
-                    nameof(Technique), entityName);
+                throw new EntityNotFoundException("Couldn't find an entity matching the specified name",
+                    nameof(TechniqueCategory), entityName);
             }
 
-            return entity.FirstOrDefault();
+            return result.FirstOrDefault();
         }
 
         /// <summary>

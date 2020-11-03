@@ -20,11 +20,10 @@ namespace Athena.Repositories
         }
 
         /// <summary>
-        /// Begins tracking a TEntity entity of type in the 'Added' state, such that it
-        /// will be persisted to the DB when SaveChanges() is called.
+        /// Inserts a new <typeparam name="TEntity"></typeparam> entity into the database.
         /// </summary>
         /// <param name="entity"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns></returns>
         public async Task<TEntity> Insert(TEntity entity)
         {
             if (entity == null)
@@ -47,10 +46,12 @@ namespace Athena.Repositories
         }
 
         /// <summary>
-        /// Begin tracking any changes made to an entity in the 'Updated' state.
+        /// Persists any changes made to a given <typeparam name="TEntity"></typeparam> entity to the database.
         /// </summary>
         /// <param name="entity"></param>
+        /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exception"></exception>
         public async Task UpdateAsync(TEntity entity)
         {
             if (entity == null)
@@ -72,7 +73,32 @@ namespace Athena.Repositories
         }
 
         /// <summary>
-        /// Gets the subset of all TEntity entities that satisfy a given condition.
+        /// Deletes a given <typeparam name="TEntity"></typeparam> from the database.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task DeleteAsync(TEntity entity)
+        {
+            if (entity is null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            try
+            {
+                _context.Set<TEntity>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"An error occurred while attempting to update a '{typeof(TEntity)}' entity: {@e}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets the subset of all <typeparam name="TEntity"></typeparam> entities that satisfy a given condition.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>

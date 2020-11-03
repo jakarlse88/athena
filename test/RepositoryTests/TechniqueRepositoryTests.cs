@@ -198,6 +198,63 @@ namespace Athena.Test.RepositoryTests
             mockContext
                 .Verify(x => x.Set<Technique>().Update(It.IsAny<Technique>()), Times.Once);
         }
+        
+        /**
+         * DeleteAsync()
+         */
+        [Fact]
+        public async Task TestDeleteAsyncEntityNull()
+        {
+            // Arrange
+            var repository = new Repository<Technique>(null);
+            
+            // Act
+            async Task Action() => await repository.DeleteAsync(null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
+            Assert.Equal("entity", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestDeleteAsyncRepositoryThrows()
+        {
+            // Arrange
+            var mockContext = new Mock<AthenaDbContext>();
+            mockContext
+                .Setup(x => x.Set<Technique>().Remove(It.IsAny<Technique>()))
+                .Throws<Exception>();
+
+            var repository = new Repository<Technique>(mockContext.Object);
+            
+            // Act
+            async Task Action() => await repository.DeleteAsync(new Technique());
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<Exception>(Action);
+        }
+
+        [Fact]
+        public async Task TestDeleteAsync()
+        {
+            // Arrange
+            var mockContext = new Mock<AthenaDbContext>();
+            mockContext
+                .Setup(x => x.Set<Technique>().Remove(It.IsAny<Technique>()))
+                .Verifiable();
+
+            var repository = new Repository<Technique>(mockContext.Object);
+            
+            // Act
+            await repository.DeleteAsync(new Technique());
+
+            // Assert
+            mockContext
+                .Verify(x => x.Set<Technique>().Remove(It.IsAny<Technique>()), Times.Once());
+        }
+
+
+
 
         /**
          * Internal helper methods

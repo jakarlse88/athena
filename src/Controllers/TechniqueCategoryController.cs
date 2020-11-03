@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.Auth;
 using Athena.Infrastructure.Exceptions;
@@ -125,7 +126,31 @@ namespace Athena.Controllers
             }
             catch (EntityNotFoundException)
             {
-                return NotFound($"Couldn't find a {nameof(Technique)} entity matching the name '{model.Name}'.");
+                return NotFound($"Couldn't find a {nameof(TechniqueCategory)} entity matching the name '{model.Name}'");
+            }
+        }
+
+        [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueCategoryDeletePermission)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _techniqueCategoryService.DeleteAsync(entityName);
+                return NoContent();
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound($"Couldn't find a {nameof(TechniqueCategory)} entity matching the name '{entityName}'");
             }
         }
     }
