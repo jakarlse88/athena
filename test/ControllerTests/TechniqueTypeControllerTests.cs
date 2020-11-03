@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Athena.Controllers;
-using Athena.Models.ViewModels;
 using Athena.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -9,6 +8,7 @@ using Xunit;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper.Internal;
 using System.Linq;
+using Athena.Models.DTOs;
 
 namespace Athena.Test.ControllerTests
 {
@@ -29,7 +29,8 @@ namespace Athena.Test.ControllerTests
             foreach (var method in methods)
             {
                 // Assert
-                Assert.Equal(typeof(AuthorizeAttribute), method.GetCustomAttributes(typeof(AuthorizeAttribute), true).First().GetType());
+                Assert.Equal(typeof(AuthorizeAttribute),
+                    method.GetCustomAttributes(typeof(AuthorizeAttribute), true).First().GetType());
             }
         }
 
@@ -63,7 +64,7 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueTypeService>();
             mockService
                 .Setup(x => x.GetByNameAsync(testName))
-                .ReturnsAsync(new TechniqueTypeViewModel { Name = testName })
+                .ReturnsAsync(new TechniqueTypeDTO(testName, "", "", ""))
                 .Verifiable();
 
             var controller = new TechniqueTypeController(mockService.Object);
@@ -73,7 +74,7 @@ namespace Athena.Test.ControllerTests
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(result);
-            var modelResult = Assert.IsAssignableFrom<TechniqueTypeViewModel>(actionResult.Value);
+            var modelResult = Assert.IsAssignableFrom<TechniqueTypeDTO>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
 
             mockService
@@ -89,7 +90,7 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueTypeService>();
             mockService
                 .Setup(x => x.GetByNameAsync(testName))
-                .ReturnsAsync(new TechniqueTypeViewModel())
+                .ReturnsAsync(new TechniqueTypeDTO(testName, "", "", ""))
                 .Verifiable();
 
             var controller = new TechniqueTypeController(mockService.Object);
@@ -128,23 +129,23 @@ namespace Athena.Test.ControllerTests
 
             var mockService = new Mock<ITechniqueTypeService>();
             mockService
-                .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()))
-                .ReturnsAsync(new TechniqueTypeViewModel { Name = testName })
+                .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueTypeDTO>()))
+                .ReturnsAsync(new TechniqueTypeDTO(testName, "", "", ""))
                 .Verifiable();
 
             var controller = new TechniqueTypeController(mockService.Object);
 
             // Act
-            var result = await controller.Post(new TechniqueTypeViewModel());
+            var result = await controller.Post(new TechniqueTypeDTO("", "", "", ""));
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<CreatedAtActionResult>(result);
             Assert.Equal("Get", actionResult.ActionName);
-            var modelResult = Assert.IsAssignableFrom<TechniqueTypeViewModel>(actionResult.Value);
+            var modelResult = Assert.IsAssignableFrom<TechniqueTypeDTO>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
 
             mockService
-                .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueTypeViewModel>()), Times.Once);
+                .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueTypeDTO>()), Times.Once);
         }
 
         /**
@@ -157,7 +158,7 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueTypeService>();
             mockService
                 .Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<TechniqueTypeViewModel>());
+                .ReturnsAsync(new List<TechniqueTypeDTO>());
 
             var controller = new TechniqueTypeController(mockService.Object);
 
@@ -166,8 +167,8 @@ namespace Athena.Test.ControllerTests
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
-            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(actionResult.Value);
-            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(modelResult);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeDTO>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeDTO>>(modelResult);
             Assert.Empty(modelResult);
         }
 
@@ -178,8 +179,12 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueTypeService>();
             mockService
                 .Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<TechniqueTypeViewModel>
-                    { new TechniqueTypeViewModel(), new TechniqueTypeViewModel(), new TechniqueTypeViewModel() });
+                .ReturnsAsync(new List<TechniqueTypeDTO>
+                {
+                    new TechniqueTypeDTO("", "", "", ""),
+                    new TechniqueTypeDTO("", "", "", ""),
+                    new TechniqueTypeDTO("", "", "", "")
+                });
 
             var controller = new TechniqueTypeController(mockService.Object);
 
@@ -188,8 +193,8 @@ namespace Athena.Test.ControllerTests
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
-            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(actionResult.Value);
-            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(modelResult);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueTypeDTO>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeDTO>>(modelResult);
             Assert.Equal(3, modelResult.Count);
         }
     }

@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Athena.Controllers;
-using Athena.Models.ViewModels;
+using Athena.Infrastructure.Exceptions;
+using Athena.Models.DTOs;
+using Athena.Models.Entities;
 using Athena.Services;
 using AutoMapper.Internal;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +31,8 @@ namespace Athena.Test.ControllerTests
             foreach (var method in methods)
             {
                 // Assert
-                Assert.Equal(typeof(AuthorizeAttribute), method.GetCustomAttributes(typeof(AuthorizeAttribute), true).First().GetType());
+                Assert.Equal(typeof(AuthorizeAttribute),
+                    method.GetCustomAttributes(typeof(AuthorizeAttribute), true).First().GetType());
             }
         }
 
@@ -63,7 +66,7 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetByNameAsync(testName))
-                .ReturnsAsync(new TechniqueCategoryViewModel { Name = testName })
+                .ReturnsAsync(new TechniqueCategoryDTO(testName, "", "", ""))
                 .Verifiable();
 
             var controller = new TechniqueCategoryController(mockService.Object);
@@ -73,7 +76,7 @@ namespace Athena.Test.ControllerTests
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(result);
-            var modelResult = Assert.IsAssignableFrom<TechniqueCategoryViewModel>(actionResult.Value);
+            var modelResult = Assert.IsAssignableFrom<TechniqueCategoryDTO>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
 
             mockService
@@ -89,7 +92,7 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetByNameAsync(testName))
-                .ReturnsAsync(new TechniqueCategoryViewModel())
+                .ReturnsAsync(new TechniqueCategoryDTO("", "", "", ""))
                 .Verifiable();
 
             var controller = new TechniqueCategoryController(mockService.Object);
@@ -128,23 +131,23 @@ namespace Athena.Test.ControllerTests
 
             var mockService = new Mock<ITechniqueCategoryService>();
             mockService
-                .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueCategoryViewModel>()))
-                .ReturnsAsync(new TechniqueCategoryViewModel { Name = testName })
+                .Setup(ms => ms.CreateAsync(It.IsAny<TechniqueCategoryDTO>()))
+                .ReturnsAsync(new TechniqueCategoryDTO(testName, "", "", ""))
                 .Verifiable();
 
             var controller = new TechniqueCategoryController(mockService.Object);
 
             // Act
-            var result = await controller.Post(new TechniqueCategoryViewModel());
+            var result = await controller.Post(new TechniqueCategoryDTO("", "", "", ""));
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<CreatedAtActionResult>(result);
             Assert.Equal("Get", actionResult.ActionName);
-            var modelResult = Assert.IsAssignableFrom<TechniqueCategoryViewModel>(actionResult.Value);
+            var modelResult = Assert.IsAssignableFrom<TechniqueCategoryDTO>(actionResult.Value);
             Assert.Equal(testName, modelResult.Name);
 
             mockService
-                .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueCategoryViewModel>()), Times.Once);
+                .Verify(ms => ms.CreateAsync(It.IsAny<TechniqueCategoryDTO>()), Times.Once);
         }
 
         /**
@@ -157,7 +160,7 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<TechniqueCategoryViewModel>());
+                .ReturnsAsync(new List<TechniqueCategoryDTO>());
 
             var controller = new TechniqueCategoryController(mockService.Object);
 
@@ -166,8 +169,8 @@ namespace Athena.Test.ControllerTests
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
-            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(actionResult.Value);
-            Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(modelResult);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueCategoryDTO>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueCategoryDTO>>(modelResult);
             Assert.Empty(modelResult);
         }
 
@@ -178,8 +181,12 @@ namespace Athena.Test.ControllerTests
             var mockService = new Mock<ITechniqueCategoryService>();
             mockService
                 .Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<TechniqueCategoryViewModel>
-                    { new TechniqueCategoryViewModel(), new TechniqueCategoryViewModel(), new TechniqueCategoryViewModel() });
+                .ReturnsAsync(new List<TechniqueCategoryDTO>
+                {
+                    new TechniqueCategoryDTO("", "", "", ""), 
+                    new TechniqueCategoryDTO("", "", "", ""),
+                    new TechniqueCategoryDTO("", "", "", "")
+                });
 
             var controller = new TechniqueCategoryController(mockService.Object);
 
@@ -188,9 +195,146 @@ namespace Athena.Test.ControllerTests
 
             // Assert
             var actionResult = Assert.IsAssignableFrom<OkObjectResult>(response);
-            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(actionResult.Value);
-            Assert.IsAssignableFrom<ICollection<TechniqueCategoryViewModel>>(modelResult);
+            var modelResult = Assert.IsAssignableFrom<ICollection<TechniqueCategoryDTO>>(actionResult.Value);
+            Assert.IsAssignableFrom<ICollection<TechniqueCategoryDTO>>(modelResult);
             Assert.Equal(3, modelResult.Count);
         }
+
+        /**
+         * PUT
+         */
+        [Fact]
+        public async Task TestPutModelNull()
+        {
+            // Arrange
+            var controller = new TechniqueCategoryController(null);
+
+            // Act
+            var response = await controller.Put(null);
+
+            // Assert
+            Assert.IsAssignableFrom<BadRequestResult>(response);
+        }
+
+        [Fact]
+        public async Task TestPutModelNamePropertyNull()
+        {
+            // Arrange
+            var controller = new TechniqueCategoryController(null);
+
+            // Act
+            var response = await controller.Put(new TechniqueCategoryDTO());
+
+            // Assert
+            Assert.IsAssignableFrom<BadRequestResult>(response);
+        }
+
+        [Fact]
+        public async Task TestPutUpdateThrows()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueCategoryService>();
+            mockService
+                .Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueCategoryDTO>()))
+                .ThrowsAsync(new EntityNotFoundException())
+                .Verifiable();
+
+            var controller = new TechniqueCategoryController(mockService.Object);
+
+            // Act
+            var response = await controller.Put(new TechniqueCategoryDTO("test", "", "", ""));
+
+            // Assert
+            Assert.IsAssignableFrom<NotFoundObjectResult>(response);
+
+            mockService
+                .Verify(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueCategoryDTO>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestPut()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueCategoryService>();
+            mockService
+                .Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueCategoryDTO>()))
+                .Verifiable();
+
+            var controller = new TechniqueCategoryController(mockService.Object);
+
+            // Act
+            var response = await controller.Put(new TechniqueCategoryDTO("test", "", "", ""));
+
+            // Assert
+            Assert.IsAssignableFrom<NoContentResult>(response);
+
+            mockService
+                .Verify(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueCategoryDTO>()), Times.Once());
+        }
+        
+        /**
+         * Delete()
+         */
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task TestDeleteEntityNameNull(string testName)
+        {
+            // Arrange
+            var controller = new TechniqueCategoryController(null);
+            
+            // Act
+            var response = await controller.Delete(testName);
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<BadRequestResult>(response);
+        }
+
+        [Fact]
+        public async Task TestDeleteEntityEntityNotFound()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueCategoryService>();
+            mockService
+                .Setup(x => x.DeleteAsync(It.IsAny<string>()))
+                .ThrowsAsync(new EntityNotFoundException())
+                .Verifiable();
+
+            var controller = new TechniqueCategoryController(mockService.Object);
+
+            // Act
+            var response = await controller.Delete("test");
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<NotFoundObjectResult>(response);
+            Assert.Equal($"Couldn't find a {nameof(TechniqueCategory)} entity matching the name 'test'", actionResult.Value);
+
+            mockService
+                .Verify(x => x.DeleteAsync(It.IsAny<string>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestDelete()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueCategoryService>();
+            mockService
+                .Setup(x => x.DeleteAsync(It.IsAny<string>()))
+                .Verifiable();
+
+            var controller = new TechniqueCategoryController(mockService.Object);
+
+            // Act
+            var response = await controller.Delete("test");
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<NoContentResult>(response);
+
+            mockService
+                .Verify(x => x.DeleteAsync(It.IsAny<string>()), Times.Once());
+        }
+
+
     }
 }

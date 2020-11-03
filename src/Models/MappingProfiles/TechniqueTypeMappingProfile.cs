@@ -1,5 +1,5 @@
-﻿using Athena.Models.Entities;
-using Athena.Models.ViewModels;
+﻿using Athena.Models.DTOs;
+using Athena.Models.Entities;
 using AutoMapper;
 
 namespace Athena.Models.MappingProfiles
@@ -8,7 +8,7 @@ namespace Athena.Models.MappingProfiles
     {
         public TechniqueTypeMappingProfile()
         {
-            CreateMap<TechniqueType, TechniqueTypeViewModel>();
+            CreateMap<TechniqueType, TechniqueTypeDTO>();
         }
     }
 }

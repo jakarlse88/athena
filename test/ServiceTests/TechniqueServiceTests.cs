@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.MappingProfiles;
-using Athena.Models.ViewModels;
 using Athena.Repositories;
 using Athena.Services;
 using AutoMapper;
@@ -35,10 +35,10 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueService(null, null, null, null);
 
             // Act
-            async Task<TechniqueViewModel> TestAction() => await service.GetByNameAsync(testString);
+            async Task<TechniqueDTO> Action() => await service.GetByNameAsync(testString);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentException>(Action);
             Assert.Equal("Argument contains one or more invalid characters. (Parameter 'name')", ex.Message);
             Assert.Equal("name", ex.ParamName);
         }
@@ -53,10 +53,10 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueService(null, null, null, null);
 
             // Act
-            async Task<TechniqueViewModel> TestAction() => await service.GetByNameAsync(testString);
+            async Task<TechniqueDTO> Action() => await service.GetByNameAsync(testString);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("name", ex.ParamName);
         }
 
@@ -77,7 +77,7 @@ namespace Athena.Test.ServiceTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<TechniqueViewModel>(result);
+            Assert.IsAssignableFrom<TechniqueDTO>(result);
 
             mockRepository
                 .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()), Times.Once());
@@ -115,11 +115,11 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueService(null, null, null, null);
 
             // Act
-            async Task<TechniqueViewModel> TestAction() =>
+            async Task<TechniqueDTO> Action() =>
                 await service.CreateAsync(null);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("model", ex.ParamName);
         }
 
@@ -130,11 +130,11 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueService(null, null, null, null);
 
             // Act
-            async Task<TechniqueViewModel> TestAction() =>
-                await service.CreateAsync(new TechniqueViewModel { Name = null });
+            async Task<TechniqueDTO> Action() =>
+                await service.CreateAsync(new TechniqueDTO(null, null, null, null, null, null));
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("Name", ex.ParamName);
         }
 
@@ -142,17 +142,16 @@ namespace Athena.Test.ServiceTests
         public async Task TestCreateAsync()
         {
             // Arrange
-            var model = new TechniqueViewModel
-            {
-                TechniqueCategoryName = "Test",
-                TechniqueTypeName = "Test",
-                Name = "Arae-makgi"
-            };
+            var model = new TechniqueDTO("Test", "Test", "Arae-makgi", null, null, null);
 
             var mockTechniqueRepository = new Mock<IRepository<Technique>>();
             mockTechniqueRepository
                 .Setup(x => x.Insert(It.IsAny<Technique>()))
-                .ReturnsAsync(new Technique { Name = model.Name, TechniqueCategoryName = model.TechniqueCategoryName, TechniqueTypeName = model.TechniqueTypeName })
+                .ReturnsAsync(new Technique
+                {
+                    Name = model.Name, TechniqueCategoryName = model.TechniqueCategoryName,
+                    TechniqueTypeName = model.TechniqueTypeName
+                })
                 .Verifiable();
 
             var mockTechniqueCategoryRepository = new Mock<IRepository<TechniqueCategory>>();
@@ -175,7 +174,7 @@ namespace Athena.Test.ServiceTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<TechniqueViewModel>(result);
+            Assert.IsAssignableFrom<TechniqueDTO>(result);
             Assert.Equal(model.Name, result.Name);
 
             mockTechniqueRepository
@@ -196,12 +195,7 @@ namespace Athena.Test.ServiceTests
         public async Task TestCreateAsyncTechniqueTypeNotFound()
         {
             // Arrange
-            var model = new TechniqueViewModel
-            {
-                TechniqueCategoryName = "Test",
-                TechniqueTypeName = "Test",
-                Name = "Arae-makgi"
-            };
+            var model = new TechniqueDTO("Test", "Test", "Arae-makgi", null, null, null);
 
             var mockTechniqueRepository = new Mock<IRepository<Technique>>();
 
@@ -221,10 +215,10 @@ namespace Athena.Test.ServiceTests
                 mockTechniqueTypeRepository.Object, mockTechniqueCategoryRepository.Object);
 
             // Act
-            async Task<TechniqueViewModel> TestAction() => await service.CreateAsync(model);
+            async Task<TechniqueDTO> Action() => await service.CreateAsync(model);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<Exception>(TestAction);
+            var ex = await Assert.ThrowsAsync<Exception>(Action);
             Assert.Equal(
                 $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueType)} entity with the Name <{model.TechniqueTypeName}>.",
                 ex.Message);
@@ -244,12 +238,7 @@ namespace Athena.Test.ServiceTests
         public async Task TestCreateAsyncTechniqueCategoryNotFound()
         {
             // Arrange
-            var model = new TechniqueViewModel
-            {
-                TechniqueCategoryName = "Test",
-                TechniqueTypeName = "Test",
-                Name = "Arae-makgi"
-            };
+            var model = new TechniqueDTO("Test", "Test", "Arae-makgi", null, null, null);
 
             var mockTechniqueRepository = new Mock<IRepository<Technique>>();
 
@@ -265,10 +254,10 @@ namespace Athena.Test.ServiceTests
                 mockTechniqueTypeRepository.Object, mockTechniqueCategoryRepository.Object);
 
             // Act
-            async Task<TechniqueViewModel> TestAction() => await service.CreateAsync(model);
+            async Task<TechniqueDTO> Action() => await service.CreateAsync(model);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<Exception>(TestAction);
+            var ex = await Assert.ThrowsAsync<Exception>(Action);
             Assert.Equal(
                 $"An error occurred in {nameof(TechniqueService)}: no {typeof(TechniqueCategory)} entity with the Name <{model.TechniqueCategoryName}>.",
                 ex.Message);
@@ -299,7 +288,7 @@ namespace Athena.Test.ServiceTests
             // Assert
             Assert.NotNull(result);
             Assert.Empty(result);
-            Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(result);
+            Assert.IsAssignableFrom<ICollection<TechniqueDTO>>(result);
         }
 
         [Fact]
@@ -319,7 +308,7 @@ namespace Athena.Test.ServiceTests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
-            Assert.IsAssignableFrom<ICollection<TechniqueViewModel>>(result);
+            Assert.IsAssignableFrom<ICollection<TechniqueDTO>>(result);
         }
 
         /**
@@ -332,10 +321,10 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueService(null, null, null, null);
 
             // Act
-            async Task TestAction() => await service.UpdateAsync(null, null);
+            async Task Action() => await service.UpdateAsync(null, null);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("entityName", ex.ParamName);
         }
 
@@ -346,11 +335,63 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueService(null, null, null, null);
 
             // Act
-            async Task TestAction() => await service.UpdateAsync("test", null);
+            async Task Action() => await service.UpdateAsync("test", null);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("model", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestUpdateAsync()
+        {
+            // Arrange
+            var model = new TechniqueDTO("test", "test", "test", "test", "test", "test");
+
+            var mockTechniqueCategoryRepository = new Mock<IRepository<TechniqueCategory>>();
+            mockTechniqueCategoryRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()))
+                .ReturnsAsync(new TechniqueCategory[] { new() })
+                .Verifiable();
+
+            var mockTechniqueTypeRepository = new Mock<IRepository<TechniqueType>>();
+            mockTechniqueTypeRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new TechniqueType[] { new() })
+                .Verifiable();
+
+            var mockTechniqueRepository = new Mock<IRepository<Technique>>();
+            mockTechniqueRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()))
+                .ReturnsAsync(new Technique[] { new() })
+                .Verifiable();
+
+            mockTechniqueRepository
+                .Setup(x => x.UpdateAsync(It.IsAny<Technique>()))
+                .Verifiable();
+
+            var service = new TechniqueService(
+                _mapper,
+                mockTechniqueRepository.Object,
+                mockTechniqueTypeRepository.Object,
+                mockTechniqueCategoryRepository.Object);
+
+            // Act
+            await service.UpdateAsync("test", model);
+
+            // Assert
+            mockTechniqueRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<Technique, bool>>>()), Times.Once());
+
+            mockTechniqueTypeRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()), Times.Once());
+
+            mockTechniqueCategoryRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueCategory, bool>>>()),
+                    Times.Once());
+
+            mockTechniqueRepository
+                .Verify(x => x.UpdateAsync(It.IsAny<Technique>()), Times.Once());
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.Auth;
+using Athena.Infrastructure.Exceptions;
+using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.Validators;
-using Athena.Models.ViewModels;
 using Athena.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +26,7 @@ namespace Athena.Controllers
 
         /// <summary>
         /// Get all <see cref="TechniqueCategory"/> entities,
-        /// represented as <see cref="TechniqueCategoryViewModel"/> DTOs.
+        /// represented as <see cref="TechniqueCategoryDTO"/> DTOs.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -82,7 +84,7 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Post(TechniqueCategoryViewModel model) 
+        public async Task<IActionResult> Post(TechniqueCategoryDTO model) 
         {
             if (model == null)
             {
@@ -92,6 +94,64 @@ namespace Athena.Controllers
             var result = await _techniqueCategoryService.CreateAsync(model);
 
             return CreatedAtAction("Get", new { name = result.Name }, result);
+        }
+
+        /// <summary>
+        /// Update an existing <see cref="TechniqueCategory"/> entity.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <response code="204">Entity was successfully updated.</response>
+        /// <response code="401">User is not authorized to access this resource.</response>
+        /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
+        /// <response code="404">No entity was found matching the given identifier.</response>
+        [HttpPut]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueCategoryUpdatePermission)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Put(TechniqueCategoryDTO model)
+        {
+            if (model == null || string.IsNullOrWhiteSpace(model.Name))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _techniqueCategoryService.UpdateAsync(model.Name, model);
+                return NoContent();
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound($"Couldn't find a {nameof(TechniqueCategory)} entity matching the name '{model.Name}'");
+            }
+        }
+
+        [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueCategoryDeletePermission)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _techniqueCategoryService.DeleteAsync(entityName);
+                return NoContent();
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound($"Couldn't find a {nameof(TechniqueCategory)} entity matching the name '{entityName}'");
+            }
         }
     }
 }

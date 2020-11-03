@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Athena.Models.ViewModels;
+using Athena.Models.DTOs;
 
 namespace Athena.Services
 {
     public interface ITechniqueTypeService
     {
-        Task<TechniqueTypeViewModel> CreateAsync(TechniqueTypeViewModel model);
-        Task<TechniqueTypeViewModel> GetByNameAsync(string name);
-        Task<ICollection<TechniqueTypeViewModel>> GetAllAsync();
+        Task<TechniqueTypeDTO> CreateAsync(TechniqueTypeDTO model);
+        Task<TechniqueTypeDTO> GetByNameAsync(string name);
+        Task<ICollection<TechniqueTypeDTO>> GetAllAsync();
     }
 }

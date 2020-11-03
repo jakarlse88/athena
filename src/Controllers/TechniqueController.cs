@@ -1,10 +1,10 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.Auth;
+using Athena.Infrastructure.Exceptions;
+using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.Validators;
-using Athena.Models.ViewModels;
 using Athena.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +24,7 @@ namespace Athena.Controllers
         }
 
         /// <summary>
-        /// Get a <see cref="Technique"/> entity (represented, if found, as a <see cref="TechniqueViewModel"/> DTO)
+        /// Get a <see cref="Technique"/> entity (represented, if found, as a <see cref="TechniqueDTO"/> DTO)
         /// by its Name property.
         /// </summary>
         /// <param name="name"></param>
@@ -57,7 +57,7 @@ namespace Athena.Controllers
         }
 
         /// <summary>
-        /// Get all <see cref="Technique"/> entities, represented as <see cref="TechniqueViewModel"/> DTOs.
+        /// Get all <see cref="Technique"/> entities, represented as <see cref="TechniqueDTO"/> DTOs.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -83,7 +83,7 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Post(TechniqueViewModel model)
+        public async Task<IActionResult> Post(TechniqueDTO model)
         {
             if (model == null)
             {
@@ -111,7 +111,7 @@ namespace Athena.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Put(TechniqueViewModel model)
+        public async Task<IActionResult> Put(TechniqueDTO model)
         {
             if (model == null || string.IsNullOrWhiteSpace(model.Name))
             {
@@ -123,7 +123,7 @@ namespace Athena.Controllers
                 await _techniqueService.UpdateAsync(model.Name, model);
                 return NoContent();
             }
-            catch (Exception)
+            catch (EntityNotFoundException)
             {
                 return NotFound($"Couldn't find a {nameof(Technique)} entity matching the name '{model.Name}'.");
             }

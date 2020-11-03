@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.MappingProfiles;
-using Athena.Models.ViewModels;
 using Athena.Repositories;
 using Athena.Services;
 using AutoMapper;
@@ -37,10 +37,10 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueTypeService(null, null);
 
             // Act
-            async Task<TechniqueTypeViewModel> TestAction() => await service.GetByNameAsync(testString);
+            async Task<TechniqueTypeDTO> Action() => await service.GetByNameAsync(testString);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("name", ex.ParamName);
         }
 
@@ -61,7 +61,7 @@ namespace Athena.Test.ServiceTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<TechniqueTypeViewModel>(result);
+            Assert.IsAssignableFrom<TechniqueTypeDTO>(result);
 
             mockRepository
                 .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()), Times.Once());
@@ -97,10 +97,10 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueTypeService(null, null);
 
             // Act
-            async Task<TechniqueTypeViewModel> TestAction() => await service.GetByNameAsync(testString);
+            async Task<TechniqueTypeDTO> Action() => await service.GetByNameAsync(testString);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentException>(Action);
             Assert.Equal("Argument contains one or more invalid characters. (Parameter 'name')", ex.Message);
             Assert.Equal("name", ex.ParamName);
         }
@@ -116,11 +116,11 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueTypeService(null, null);
 
             // Act
-            async Task<TechniqueTypeViewModel> TestAction() =>
+            async Task<TechniqueTypeDTO> Action() =>
                 await service.CreateAsync(null);
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("model", ex.ParamName);
         }
 
@@ -131,11 +131,11 @@ namespace Athena.Test.ServiceTests
             var service = new TechniqueTypeService(null, null);
 
             // Act
-            async Task<TechniqueTypeViewModel> TestAction() =>
-                await service.CreateAsync(new TechniqueTypeViewModel { Name = null });
+            async Task<TechniqueTypeDTO> Action() =>
+                await service.CreateAsync(new TechniqueTypeDTO(null, null, null, null));
 
             // Assert
-            var ex = await Assert.ThrowsAsync<ArgumentNullException>(TestAction);
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
             Assert.Equal("Name", ex.ParamName);
         }
 
@@ -143,10 +143,7 @@ namespace Athena.Test.ServiceTests
         public async Task TestCreateAsync()
         {
             // Arrange
-            var model = new TechniqueTypeViewModel
-            {
-                Name = "Arae-makgi"
-            };
+            var model = new TechniqueTypeDTO("Arae-makgi", null, null, null);
 
             var mockTechniqueTypeRepository = new Mock<IRepository<TechniqueType>>();
             mockTechniqueTypeRepository
@@ -161,7 +158,7 @@ namespace Athena.Test.ServiceTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<TechniqueTypeViewModel>(result);
+            Assert.IsAssignableFrom<TechniqueTypeDTO>(result);
             Assert.Equal(model.Name, result.Name);
 
             mockTechniqueTypeRepository
@@ -188,7 +185,7 @@ namespace Athena.Test.ServiceTests
             // Assert
             Assert.NotNull(result);
             Assert.Empty(result);
-            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(result);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeDTO>>(result);
         }
 
         [Fact]
@@ -208,7 +205,7 @@ namespace Athena.Test.ServiceTests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
-            Assert.IsAssignableFrom<ICollection<TechniqueTypeViewModel>>(result);
+            Assert.IsAssignableFrom<ICollection<TechniqueTypeDTO>>(result);
         }
     }
 }

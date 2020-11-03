@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.Validators;
-using Athena.Models.ViewModels;
 using Athena.Repositories;
 using AutoMapper;
 
@@ -29,7 +29,7 @@ namespace Athena.Services
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"><paramref name="name"/> argument contains one or more illegal characters.</exception>
-        public async Task<TechniqueTypeViewModel> GetByNameAsync(string name)
+        public async Task<TechniqueTypeDTO> GetByNameAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -48,7 +48,7 @@ namespace Athena.Services
             var techniqueType = result as List<TechniqueType> ?? result.ToList();
 
             return (techniqueType.Count is 1)
-                ? _mapper.Map<TechniqueTypeViewModel>(techniqueType.FirstOrDefault())
+                ? _mapper.Map<TechniqueTypeDTO>(techniqueType.FirstOrDefault())
                 : null;
         }
 
@@ -56,11 +56,11 @@ namespace Athena.Services
         /// Get all <see ctechref="TechniqueType"/> entities.
         /// </summary>
         /// <returns></returns>
-        public async Task<ICollection<TechniqueTypeViewModel>> GetAllAsync()
+        public async Task<ICollection<TechniqueTypeDTO>> GetAllAsync()
         {
             var results = await _techniqueTypeRepository.GetByConditionAsync(_ => true);
 
-            return _mapper.Map<ICollection<TechniqueTypeViewModel>>(results);
+            return _mapper.Map<ICollection<TechniqueTypeDTO>>(results);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Athena.Services
         /// <param name="model"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public async Task<TechniqueTypeViewModel> CreateAsync(TechniqueTypeViewModel model)
+        public async Task<TechniqueTypeDTO> CreateAsync(TechniqueTypeDTO model)
         {
             if (model is null)
             {
@@ -83,7 +83,7 @@ namespace Athena.Services
 
             var entity = await _techniqueTypeRepository.Insert(new TechniqueType { Name = model.Name });
 
-            return _mapper.Map<TechniqueTypeViewModel>(entity);
+            return _mapper.Map<TechniqueTypeDTO>(entity);
         }
     }
 }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Athena.Models.Entities;
-using Athena.Models.ViewModels;
 using Athena.Repositories;
 using AutoMapper;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Athena.Infrastructure.Exceptions;
+using Athena.Models.DTOs;
 using Athena.Models.Validators;
+using Serilog;
 
 namespace Athena.Services
 {
@@ -28,7 +30,7 @@ namespace Athena.Services
         /// <param name="model"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public async Task<TechniqueCategoryViewModel> CreateAsync(TechniqueCategoryViewModel model)
+        public async Task<TechniqueCategoryDTO> CreateAsync(TechniqueCategoryDTO model)
         {
             if (model is null)
             {
@@ -50,7 +52,7 @@ namespace Athena.Services
                         Description = model.Description
                     });
 
-            return _mapper.Map<TechniqueCategoryViewModel>(entity);
+            return _mapper.Map<TechniqueCategoryDTO>(entity);
         }
 
         /// <summary>
@@ -59,8 +61,8 @@ namespace Athena.Services
         /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"><paramref name="name"/> argument contains one or more illegal characters.</exception>
-        public async Task<TechniqueCategoryViewModel> GetByNameAsync(string name)
+        /// <exception cref="ArgumentException"><paramref entityName="name"/> argument contains one or more illegal characters.</exception>
+        public async Task<TechniqueCategoryDTO> GetByNameAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -79,22 +81,126 @@ namespace Athena.Services
             var resultList = result as List<TechniqueCategory> ?? result.ToList();
 
             return resultList.Count > 0
-                ? _mapper.Map<TechniqueCategoryViewModel>(result.FirstOrDefault())
+                ? _mapper.Map<TechniqueCategoryDTO>(result.FirstOrDefault())
                 : null;
         }
 
         /// <summary>
         /// Get all <see cref="TechniqueCategory"/> entities, represented as a collection of
-        /// <see cref="TechniqueCategoryViewModel"/> DTOs.
+        /// <see cref="TechniqueCategoryDTO"/> DTOs.
         /// </summary>
         /// <returns></returns>
-        public async Task<ICollection<TechniqueCategoryViewModel>> GetAllAsync()
+        public async Task<ICollection<TechniqueCategoryDTO>> GetAllAsync()
         {
             var results = await _techniqueCategoryRepository.GetByConditionAsync(_ => true);
 
             return results.Any()
-                ? _mapper.Map<ICollection<TechniqueCategoryViewModel>>(results)
-                : new HashSet<TechniqueCategoryViewModel>();
+                ? _mapper.Map<ICollection<TechniqueCategoryDTO>>(results)
+                : new HashSet<TechniqueCategoryDTO>();
+        }
+
+        /// <summary>
+        /// Updates an existing <see cref="TechniqueCategory"/> entity.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task UpdateAsync(string entityName, TechniqueCategoryDTO model)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentNullException(nameof(entityName));
+            }
+
+            if (model is null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            var entity =
+                await GetTechniqueCategoryAsync(entityName);
+
+            MapExistingEntity(entity, model);
+            await _techniqueCategoryRepository.UpdateAsync(entity);
+        }
+
+        /// <summary>
+        /// Deletes the <see cref="TechniqueCategory"/> entity whose 'Name' property matches the
+        /// <paramref name="entityName"/> parameter.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task DeleteAsync(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentNullException(nameof(entityName));
+            }
+
+            try
+            {
+                await _techniqueCategoryRepository.DeleteAsync(await GetTechniqueCategoryAsync(entityName));
+            }
+            catch (EntityNotFoundException e)
+            {
+                Log.Error($"An error occurred while attempting to delete a '{typeof(TechniqueCategory)}' entity: {@e}");
+                throw;
+            }
+        }
+
+        /**
+       *
+       * Private helper methods
+       * 
+       */
+        /// <summary>
+        /// Gets a <see cref="TechniqueCategory"/> entity by its 'Name' property.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Exception"></exception>
+        private async Task<TechniqueCategory> GetTechniqueCategoryAsync(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentNullException(nameof(entityName));
+            }
+
+            var result =
+                await _techniqueCategoryRepository.GetByConditionAsync(t => t.Name.ToLower() == entityName.ToLower());
+
+            if (result is null || !result.Any())
+            {
+                throw new EntityNotFoundException("Couldn't find an entity matching the specified name",
+                    nameof(TechniqueCategory), entityName);
+            }
+
+            return result.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Map the properties of a <see cref="TechniqueCategoryDTO"/> model onto an existing
+        /// <see cref="TechniqueCategory"/> entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="model"></param>
+        private void MapExistingEntity(TechniqueCategory entity, TechniqueCategoryDTO model)
+        {
+            if (entity is null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            if (model is null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            entity.NameHangeul = model.NameHangeul;
+            entity.NameHanja = model.NameHanja;
+            entity.Description = model.Description;
         }
     }
 }
