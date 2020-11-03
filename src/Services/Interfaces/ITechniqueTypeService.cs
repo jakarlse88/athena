@@ -9,5 +9,6 @@ namespace Athena.Services
         Task<TechniqueTypeDTO> CreateAsync(TechniqueTypeDTO model);
         Task<TechniqueTypeDTO> GetByNameAsync(string name);
         Task<ICollection<TechniqueTypeDTO>> GetAllAsync();
+        Task DeleteAsync(string entityName);
     }
 }
