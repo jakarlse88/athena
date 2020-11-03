@@ -27,7 +27,7 @@ namespace Athena.Services
         /// <summary>
         /// Create a new <see cref="Technique"/> entity.
         /// </summary>
-        /// <param entityName="model"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         public async Task<TechniqueCategoryDTO> CreateAsync(TechniqueCategoryDTO model)
@@ -58,7 +58,7 @@ namespace Athena.Services
         /// <summary>
         /// Get a <see cref="TechniqueCategory"/> entity by its Name property.
         /// </summary>
-        /// <param entityName="name"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"><paramref entityName="name"/> argument contains one or more illegal characters.</exception>
