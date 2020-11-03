@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Athena.Infrastructure.Exceptions;
 using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.MappingProfiles;
@@ -206,6 +207,141 @@ namespace Athena.Test.ServiceTests
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.IsAssignableFrom<ICollection<TechniqueTypeDTO>>(result);
+        }
+        
+        /**
+         * DeleteAsync()
+         */
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task TestDeleteAsyncEntityNameNull(string testString)
+        {
+            // Arrange
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task Action() => await service.DeleteAsync(testString);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
+            Assert.Equal("entityName", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestDeleteAsync()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new TechniqueType[] { new() })
+                .Verifiable();
+
+            mockRepository
+                .Setup(x => x.DeleteAsync(It.IsAny<TechniqueType>()))
+                .Verifiable();
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            await service.DeleteAsync("test");
+
+            // Assert
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()),
+                    Times.Once());
+
+            mockRepository
+                .Verify(x => x.DeleteAsync(It.IsAny<TechniqueType>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestDeleteAsyncEntityNotFound()
+        {
+            // Arrange
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new List<TechniqueType>())
+                .Verifiable();
+
+            var service = new TechniqueTypeService(mockRepository.Object, _mapper);
+
+            // Act
+            async Task Action() => await service.DeleteAsync("test");
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<EntityNotFoundException>(Action);
+            Assert.Equal("Couldn't find an entity matching the specified name", ex.Message);
+            Assert.Equal("TechniqueType", ex.EntityType);
+            Assert.Equal("test", ex.EntityName);
+            
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()),
+                    Times.Once());
+        }
+        
+        /**
+         * UpdateAsync()
+         */
+        [Fact]
+        public async Task TestUpdateAsyncEntityNull()
+        {
+            // Arrange
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task Action() => await service.UpdateAsync(null, null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
+            Assert.Equal("entityName", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestUpdateAsyncModelNull()
+        {
+            // Arrange
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task Action() => await service.UpdateAsync("test", null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
+            Assert.Equal("model", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestUpdateAsync()
+        {
+            // Arrange
+            var model = new TechniqueTypeDTO("test", "test", "test", "test");
+
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new TechniqueType[] { new() })
+                .Verifiable();
+
+            mockRepository
+                .Setup(x => x.UpdateAsync(It.IsAny<TechniqueType>()))
+                .Verifiable();
+
+            var service = new TechniqueTypeService(mockRepository.Object, null);
+
+            // Act
+            await service.UpdateAsync("test", model);
+
+            // Assert
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()),
+                    Times.Once());
+
+            mockRepository
+                .Verify(x => x.UpdateAsync(It.IsAny<TechniqueType>()), Times.Once());
         }
     }
 }
