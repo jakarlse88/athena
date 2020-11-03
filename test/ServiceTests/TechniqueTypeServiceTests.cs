@@ -282,5 +282,66 @@ namespace Athena.Test.ServiceTests
                 .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()),
                     Times.Once());
         }
+        
+        /**
+         * UpdateAsync()
+         */
+        [Fact]
+        public async Task TestUpdateAsyncEntityNull()
+        {
+            // Arrange
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task Action() => await service.UpdateAsync(null, null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
+            Assert.Equal("entityName", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestUpdateAsyncModelNull()
+        {
+            // Arrange
+            var service = new TechniqueTypeService(null, null);
+
+            // Act
+            async Task Action() => await service.UpdateAsync("test", null);
+
+            // Assert
+            var ex = await Assert.ThrowsAsync<ArgumentNullException>(Action);
+            Assert.Equal("model", ex.ParamName);
+        }
+
+        [Fact]
+        public async Task TestUpdateAsync()
+        {
+            // Arrange
+            var model = new TechniqueTypeDTO("test", "test", "test", "test");
+
+            var mockRepository = new Mock<IRepository<TechniqueType>>();
+            mockRepository
+                .Setup(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()))
+                .ReturnsAsync(new TechniqueType[] { new() })
+                .Verifiable();
+
+            mockRepository
+                .Setup(x => x.UpdateAsync(It.IsAny<TechniqueType>()))
+                .Verifiable();
+
+            var service = new TechniqueTypeService(mockRepository.Object, null);
+
+            // Act
+            await service.UpdateAsync("test", model);
+
+            // Assert
+            mockRepository
+                .Verify(x => x.GetByConditionAsync(It.IsAny<Expression<Func<TechniqueType, bool>>>()),
+                    Times.Once());
+
+            mockRepository
+                .Verify(x => x.UpdateAsync(It.IsAny<TechniqueType>()), Times.Once());
+        }
     }
 }

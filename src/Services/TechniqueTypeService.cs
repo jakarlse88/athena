@@ -66,6 +66,32 @@ namespace Athena.Services
         }
 
         /// <summary>
+        /// Updates an existing <see cref="TechniqueType"/> entity.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task UpdateAsync(string entityName, TechniqueTypeDTO model)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentNullException(nameof(entityName));
+            }
+
+            if (model is null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+            
+            var entity =
+                await GetTechniqueTypeAsync(entityName);
+            
+            MapExistingEntity(entity, model);
+            await _techniqueTypeRepository.UpdateAsync(entity);
+        }
+
+        /// <summary>
         /// Deletes an existing <see cref="TechniqueType"/> entity.
         /// </summary>
         /// <param name="entityName"></param>
@@ -140,6 +166,29 @@ namespace Athena.Services
             }
 
             return result.FirstOrDefault();
+        }
+        
+        /// <summary>
+        /// Map the properties of a <see cref="TechniqueTypeDTO"/> model onto an existing
+        /// <see cref="TechniqueType"/> entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="model"></param>
+        private void MapExistingEntity(TechniqueType entity, TechniqueTypeDTO model)
+        {
+            if (entity is null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            if (model is null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            entity.NameHangeul = model.NameHangeul;
+            entity.NameHanja = model.NameHanja;
+            entity.Description = model.Description;
         }
     }
 }
