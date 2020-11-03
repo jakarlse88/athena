@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Athena.Infrastructure.Auth;
+using Athena.Infrastructure.Exceptions;
 using Athena.Models.DTOs;
 using Athena.Models.Entities;
 using Athena.Models.Validators;
@@ -94,6 +95,30 @@ namespace Athena.Controllers
             var result = await _techniqueTypeService.CreateAsync(model);
 
             return CreatedAtAction("Get", new { name = result.Name }, result);
+        }
+        
+        [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueTypeDeletePermission)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _techniqueTypeService.DeleteAsync(entityName);
+                return NoContent();
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound($"Couldn't find a {nameof(TechniqueType)} entity matching the name '{entityName}'");
+            }
         }
     }
 }

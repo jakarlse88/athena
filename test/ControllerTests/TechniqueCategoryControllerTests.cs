@@ -334,7 +334,5 @@ namespace Athena.Test.ControllerTests
             mockService
                 .Verify(x => x.DeleteAsync(It.IsAny<string>()), Times.Once());
         }
-
-
     }
 }
