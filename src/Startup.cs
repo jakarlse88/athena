@@ -43,11 +43,11 @@ namespace Athena
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.ApplyMigrations(); // I'm assuming I'll be doing something more sophisticated in production.
+                app.ApplyMigrations(); 
             }
 
             app
-                .UseSwaggerUI()
+                .UseSwaggerUI(Configuration)
                 .UseRouting()
                 .UseCors()
                 .UseAuthentication()

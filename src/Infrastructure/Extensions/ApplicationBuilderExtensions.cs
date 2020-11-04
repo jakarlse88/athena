@@ -1,8 +1,10 @@
 ﻿using System;
 using Athena.Data;
+using Athena.Infrastructure.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Serilog;
@@ -15,14 +17,34 @@ namespace Athena.Infrastructure
         /// Enable Swagger UI.
         /// </summary>
         /// <param name="app"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        internal static IApplicationBuilder UseSwaggerUI(this IApplicationBuilder app)
+        internal static IApplicationBuilder UseSwaggerUI(this IApplicationBuilder app, IConfiguration configuration)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(uiOptions =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Athena API v1");
-                c.RoutePrefix = string.Empty;
+                uiOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "Athena API v1");
+                uiOptions.RoutePrefix = string.Empty;
+
+                var authOptions =
+                    configuration
+                        .GetSection(SwaggerAuthorizationOptions.Swagger)
+                        .GetSection(SwaggerAuthorizationOptions.Authorization)
+                        .Get<SwaggerAuthorizationOptions>();
+
+                if (authOptions is null 
+                    || string.IsNullOrWhiteSpace(authOptions.ClientId)
+                    || string.IsNullOrWhiteSpace(authOptions.ClientSecret)
+                    || string.IsNullOrWhiteSpace(authOptions.RedirectUrl))
+                {
+                    Log.Error("Unable to configure SwaggerUI authorization; one or more configuration settings are missing.");
+                    return;
+                }
+                
+                uiOptions.OAuthClientId(authOptions.ClientId);
+                uiOptions.OAuthClientSecret(authOptions.ClientSecret);
+                uiOptions.OAuth2RedirectUrl(authOptions.RedirectUrl);
             });
 
             return app;

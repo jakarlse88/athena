@@ -17,6 +17,7 @@ namespace Athena
             .AddJsonFile(
                 $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json",
                 optional: true)
+            .AddUserSecrets<Program>()
             .AddEnvironmentVariables()
             .Build();
 
