@@ -56,7 +56,7 @@ namespace Athena.Services
         }
 
         /// <summary>
-        /// Get a <see cref="TechniqueCategory"/> entity by its Name property.
+        /// Get a single <see cref="TechniqueCategory"/> entity by its Name property.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -78,10 +78,10 @@ namespace Athena.Services
                 await _techniqueCategoryRepository
                     .GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
 
-            var resultList = result as List<TechniqueCategory> ?? result.ToList();
-
-            return resultList.Count > 0
-                ? _mapper.Map<TechniqueCategoryDTO>(result.FirstOrDefault())
+            var entity = result.FirstOrDefault();
+            
+            return entity is not null
+                ? _mapper.Map<TechniqueCategoryDTO>(entity)
                 : null;
         }
 
@@ -119,9 +119,9 @@ namespace Athena.Services
             }
 
             var entity =
-                await GetTechniqueCategoryAsync(entityName);
+                await _getTechniqueCategoryAsync(entityName);
 
-            MapExistingEntity(entity, model);
+            _mapExistingEntity(entity, model);
             await _techniqueCategoryRepository.UpdateAsync(entity);
         }
 
@@ -141,7 +141,7 @@ namespace Athena.Services
 
             try
             {
-                await _techniqueCategoryRepository.DeleteAsync(await GetTechniqueCategoryAsync(entityName));
+                await _techniqueCategoryRepository.DeleteAsync(await _getTechniqueCategoryAsync(entityName));
             }
             catch (EntityNotFoundException e)
             {
@@ -161,7 +161,7 @@ namespace Athena.Services
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task<TechniqueCategory> GetTechniqueCategoryAsync(string entityName)
+        private async Task<TechniqueCategory> _getTechniqueCategoryAsync(string entityName)
         {
             if (string.IsNullOrWhiteSpace(entityName))
             {
@@ -171,13 +171,15 @@ namespace Athena.Services
             var result =
                 await _techniqueCategoryRepository.GetByConditionAsync(t => t.Name.ToLower() == entityName.ToLower());
 
-            if (result is null || !result.Any())
+            var entity = result.FirstOrDefault();
+
+            if (entity is null)
             {
                 throw new EntityNotFoundException("Couldn't find an entity matching the specified name",
                     nameof(TechniqueCategory), entityName);
             }
 
-            return result.FirstOrDefault();
+            return entity;
         }
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace Athena.Services
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="model"></param>
-        private void MapExistingEntity(TechniqueCategory entity, TechniqueCategoryDTO model)
+        private static void _mapExistingEntity(TechniqueCategory entity, TechniqueCategoryDTO model)
         {
             if (entity is null)
             {

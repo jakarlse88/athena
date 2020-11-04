@@ -83,11 +83,11 @@ namespace Athena.Services
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            
+
             var entity =
-                await GetTechniqueTypeAsync(entityName);
-            
-            MapExistingEntity(entity, model);
+                await _getTechniqueTypeAsync(entityName);
+
+            _mapExistingEntity(entity, model);
             await _techniqueTypeRepository.UpdateAsync(entity);
         }
 
@@ -106,7 +106,7 @@ namespace Athena.Services
 
             try
             {
-                await _techniqueTypeRepository.DeleteAsync(await GetTechniqueTypeAsync(entityName));
+                await _techniqueTypeRepository.DeleteAsync(await _getTechniqueTypeAsync(entityName));
             }
             catch (EntityNotFoundException e)
             {
@@ -137,7 +137,7 @@ namespace Athena.Services
 
             return _mapper.Map<TechniqueTypeDTO>(entity);
         }
-        
+
         /**
        *
        * Private helper methods
@@ -149,7 +149,7 @@ namespace Athena.Services
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task<TechniqueType> GetTechniqueTypeAsync(string entityName)
+        private async Task<TechniqueType> _getTechniqueTypeAsync(string entityName)
         {
             if (string.IsNullOrWhiteSpace(entityName))
             {
@@ -159,22 +159,20 @@ namespace Athena.Services
             var result =
                 await _techniqueTypeRepository.GetByConditionAsync(t => t.Name.ToLower() == entityName.ToLower());
 
-            if (result is null || !result.Any())
-            {
-                throw new EntityNotFoundException("Couldn't find an entity matching the specified name",
-                    nameof(TechniqueType), entityName);
-            }
+            var entity = result.FirstOrDefault();
 
-            return result.FirstOrDefault();
+            return entity
+                   ?? throw new EntityNotFoundException("Couldn't find an entity matching the specified name",
+                       nameof(TechniqueType), entityName);
         }
-        
+
         /// <summary>
         /// Map the properties of a <see cref="TechniqueTypeDTO"/> model onto an existing
         /// <see cref="TechniqueType"/> entity.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="model"></param>
-        private void MapExistingEntity(TechniqueType entity, TechniqueTypeDTO model)
+        private static void _mapExistingEntity(TechniqueType entity, TechniqueTypeDTO model)
         {
             if (entity is null)
             {

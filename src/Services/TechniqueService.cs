@@ -9,6 +9,7 @@ using Athena.Models.Entities;
 using Athena.Repositories;
 using Athena.Models.Validators;
 using AutoMapper;
+using Serilog;
 
 namespace Athena.Services
 {
@@ -46,7 +47,7 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(model.Name));
             }
 
-            var entity = await _techniqueRepository.Insert(await MapNewEntity(model));
+            var entity = await _techniqueRepository.Insert(await _mapNewEntity(model));
 
             return _mapper.Map<TechniqueDTO>(entity);
         }
@@ -111,10 +112,34 @@ namespace Athena.Services
             }
 
             var entity =
-                await GetTechniqueAsync(entityName);
+                await _getTechniqueAsync(entityName);
 
-            await MapExistingEntity(entity, model);
+            await _mapExistingEntity(entity, model);
             await _techniqueRepository.UpdateAsync(entity);
+        }
+
+        /// <summary>
+        /// Deletes a <see cref="Technique"/> entity.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task DeleteAsync(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentNullException(nameof(entityName));
+            }
+
+            try
+            {
+                await _techniqueRepository.DeleteAsync(await _getTechniqueAsync(entityName));
+            }
+            catch (EntityNotFoundException e)
+            {
+                Log.Error($"An error occurred while attempting to delete a '{typeof(Technique)}' entity: {@e}");
+                throw;
+            }
         }
 
         /**
@@ -129,22 +154,24 @@ namespace Athena.Services
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task<Technique> GetTechniqueAsync(string name)
+        private async Task<Technique> _getTechniqueAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
             
-            var entity =
+            var result =
                 await _techniqueRepository.GetByConditionAsync(t => t.Name.ToLower() == name.ToLower());
 
+            var entity = result.FirstOrDefault();
+            
             if (entity is null)
             {
                 throw new EntityNotFoundException("Couldn't find an entity matching the specified name", nameof(Technique), name);
             }
 
-            return entity.FirstOrDefault();
+            return entity;
         }
         
         /// <summary>
@@ -152,7 +179,7 @@ namespace Athena.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private async Task<Technique> MapNewEntity(TechniqueDTO model)
+        private async Task<Technique> _mapNewEntity(TechniqueDTO model)
         {
             if (model is null)
             {
@@ -161,8 +188,8 @@ namespace Athena.Services
 
             return new Technique
             {
-                TechniqueCategoryNameNavigation = await GetTechniqueCategory(model.TechniqueCategoryName),
-                TechniqueTypeNameNavigation = await GetTechniqueType(model.TechniqueTypeName),
+                TechniqueCategoryNameNavigation = await _getTechniqueCategory(model.TechniqueCategoryName),
+                TechniqueTypeNameNavigation = await _getTechniqueType(model.TechniqueTypeName),
                 Name = model.Name,
                 NameHangeul = model.NameHangeul,
                 NameHanja = model.NameHanja,
@@ -176,7 +203,7 @@ namespace Athena.Services
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="model"></param>
-        private async Task MapExistingEntity(Technique entity, TechniqueDTO model)
+        private async Task _mapExistingEntity(Technique entity, TechniqueDTO model)
         {
             if (entity is null)
             {
@@ -188,8 +215,8 @@ namespace Athena.Services
                 throw new ArgumentNullException(nameof(model));
             }
             
-            entity.TechniqueCategoryNameNavigation = await GetTechniqueCategory(model.TechniqueCategoryName);
-            entity.TechniqueTypeNameNavigation = await GetTechniqueType(model.TechniqueTypeName);
+            entity.TechniqueCategoryNameNavigation = await _getTechniqueCategory(model.TechniqueCategoryName);
+            entity.TechniqueTypeNameNavigation = await _getTechniqueType(model.TechniqueTypeName);
             entity.NameHangeul = model.NameHangeul;
             entity.NameHanja = model.NameHanja;
             entity.Description = model.Description;
@@ -201,7 +228,7 @@ namespace Athena.Services
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task<TechniqueType> GetTechniqueType(string name)
+        private async Task<TechniqueType> _getTechniqueType(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -228,7 +255,7 @@ namespace Athena.Services
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task<TechniqueCategory> GetTechniqueCategory(string name)
+        private async Task<TechniqueCategory> _getTechniqueCategory(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

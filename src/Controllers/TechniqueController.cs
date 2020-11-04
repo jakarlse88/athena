@@ -128,5 +128,38 @@ namespace Athena.Controllers
                 return NotFound($"Couldn't find a {nameof(Technique)} entity matching the name '{model.Name}'.");
             }
         }
+        
+        /// <summary>
+        /// Deletes an existing <see cref="Technique"/> entity.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        /// <response code="204">Entity was successfully deleted.</response>
+        /// <response code="401">User is not authorized to access this resource.</response>
+        /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
+        /// <response code="404">No entity was found matching the given identifier.</response>
+        [HttpDelete]
+        [Authorize(Policy = AuthorizationPolicyConstants.TechniqueDeletePermission)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(string entityName)
+        {
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _techniqueService.DeleteAsync(entityName);
+                return NoContent();
+            }
+            catch (EntityNotFoundException)
+            {
+                return NotFound($"Couldn't find a {nameof(Technique)} entity matching the name '{entityName}'");
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Athena.Controllers;
 using Athena.Infrastructure.Exceptions;
 using Athena.Models.DTOs;
+using Athena.Models.Entities;
 using Athena.Services;
 using AutoMapper.Internal;
 using Microsoft.AspNetCore.Authorization;
@@ -269,6 +270,69 @@ namespace Athena.Test.ControllerTests
 
             mockService
                 .Verify(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<TechniqueDTO>()), Times.Once());
+        }
+        
+        /**
+         * Delete()
+         */
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task TestDeleteEntityNameNull(string testName)
+        {
+            // Arrange
+            var controller = new TechniqueController(null);
+            
+            // Act
+            var response = await controller.Delete(testName);
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<BadRequestResult>(response);
+        }
+
+        [Fact]
+        public async Task TestDeleteEntityEntityNotFound()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueService>();
+            mockService
+                .Setup(x => x.DeleteAsync(It.IsAny<string>()))
+                .ThrowsAsync(new EntityNotFoundException())
+                .Verifiable();
+
+            var controller = new TechniqueController(mockService.Object);
+
+            // Act
+            var response = await controller.Delete("test");
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<NotFoundObjectResult>(response);
+            Assert.Equal($"Couldn't find a {nameof(Technique)} entity matching the name 'test'", actionResult.Value);
+
+            mockService
+                .Verify(x => x.DeleteAsync(It.IsAny<string>()), Times.Once());
+        }
+
+        [Fact]
+        public async Task TestDelete()
+        {
+            // Arrange
+            var mockService = new Mock<ITechniqueService>();
+            mockService
+                .Setup(x => x.DeleteAsync(It.IsAny<string>()))
+                .Verifiable();
+
+            var controller = new TechniqueController(mockService.Object);
+
+            // Act
+            var response = await controller.Delete("test");
+
+            // Assert
+            var actionResult = Assert.IsAssignableFrom<NoContentResult>(response);
+
+            mockService
+                .Verify(x => x.DeleteAsync(It.IsAny<string>()), Times.Once());
         }
     }
 }

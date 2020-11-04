@@ -131,6 +131,15 @@ namespace Athena.Controllers
             }
         }
         
+        /// <summary>
+        /// Deletes an existing <see cref="TechniqueType"/> entity.
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        /// <response code="204">Entity was successfully deleted.</response>
+        /// <response code="401">User is not authorized to access this resource.</response>
+        /// <response code="403">User does not hold sufficient permissions to access this resource.</response>
+        /// <response code="404">No entity was found matching the given identifier.</response>
         [HttpDelete]
         [Authorize(Policy = AuthorizationPolicyConstants.TechniqueTypeDeletePermission)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
